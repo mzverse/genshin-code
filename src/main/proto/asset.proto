@@ -473,7 +473,7 @@ message DynamicTypeMetadata {
 //   - 内存布局优化：在某些序列化框架中，这种嵌套允许引擎在不完全反序列化内部逻辑的情况下，先读取资源的“外壳”信息（如 ID 和名称）。
 
 message NodeGraphContainer {
-  message InnerWrapper { NodeGraph graph = 1; }
+  message InnerWrapper { NodeGraphData graph = 1; }
   InnerWrapper inner = 1;
 }
 
@@ -491,7 +491,7 @@ message StructureDefinitionContainer {
 // ========================================================================
 
 // 节点图 (逻辑容器)
-message NodeGraph {
+message NodeGraphData {
   // 资源的唯一身份标识
   Identifier id = 1;
   // 图的显示名称
