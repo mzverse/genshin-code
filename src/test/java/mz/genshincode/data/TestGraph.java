@@ -18,8 +18,8 @@ public class TestGraph
     {
         NodeGraph graph = new NodeGraph();
         GraphNodes.Trigger2<GenshinType.Entity, GenshinType.Guid> nodeEvent = GraphNodes.Event.Entity.onCreate();
-        GraphNodes.Expr1<String, GenshinType.Entity> nodeCast = GraphNodes.Calc.General.Cast.entityToString();
-        GraphNodes.Statement1_0<String> nodePrint = GraphNodes.Exec.General.print();
+        GraphNodes.Expr1<String, GenshinType.Entity> nodeCast = GraphNodes.Calc.Cast.entityToString();
+        GraphNodes.Statement1_0<String> nodePrint = GraphNodes.Exec.print();
         graph.addNode(nodeEvent);
         graph.addNode(nodeCast);
         graph.addNode(nodePrint);

@@ -10,12 +10,9 @@ public interface GraphNodes
 {
     interface Exec
     {
-        interface General
+        static Statement1_0<String> print()
         {
-            static Statement1_0<String> print()
-            {
-                return new Statement1_0<>(identifierServer(1), identifierServer(1), GenshinType.STRING);
-            }
+            return new Statement1_0<>(identifierServer(1), identifierServer(1), GenshinType.STRING);
         }
     }
     interface Event
@@ -30,20 +27,72 @@ public interface GraphNodes
     }
     interface Calc
     {
-        interface General
+        interface Cast
         {
-            interface Cast
+            static Expr1<String, Integer> intToString()
             {
-                static Expr1<String, Integer> intToString()
+                return new Expr1<>(identifierServer(180), identifierServer(182), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(0, GenshinType.INT));
+            }
+            static Expr1<String, GenshinType.Entity> entityToString()
+            {
+                return new Expr1<>(identifierServer(180), identifierServer(183), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(1, GenshinType.ENTITY));
+            }
+        }
+    }
+    interface Server
+    {
+        interface Exec
+        {
+            interface Local
+            {
+                static Statement2_0<GenshinType.Server.Local, String> setString()
                 {
-                    return new Expr1<>(identifierServer(180), identifierServer(182), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(0, GenshinType.INT));
-                }
-                static Expr1<String, GenshinType.Entity> entityToString()
-                {
-                    return new Expr1<>(identifierServer(180), identifierServer(183), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(1, GenshinType.ENTITY));
+                    return new Statement2_0<>(identifierServer(19), identifierServer(2674), GenshinType.Server.LOCAL, GenshinType.selected(2, GenshinType.STRING));
                 }
             }
         }
+        interface Query
+        {
+            interface Local
+            {
+                static Node<String> getString()
+                {
+                    return new Node<>(identifierServer(2656), 2, GenshinType.STRING);
+                }
+                class Node<T> extends GraphNode
+                {
+                    Pin<T> inInit;
+                    Pin<GenshinType.Server.Local> outLocal;
+                    Pin<T> outValue;
+                    public Node(Identifier idKernel, GenshinType<T> type)
+                    {
+                        super(identifierServer(18), idKernel);
+                        this.inInit = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 0, Optional.of(type)));
+                        this.outLocal = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_PARAM, 0, Optional.of(GenshinType.Server.LOCAL)));
+                        this.outValue = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_PARAM, 1, Optional.of(type)));
+                    }
+                    public Node(Identifier idKernel, int selected, GenshinType<T> type)
+                    {
+                        this(idKernel, GenshinType.selected(selected, type));
+                    }
+                    public Pin<T> getInInit()
+                    {
+                        return inInit;
+                    }
+                    public Pin<GenshinType.Server.Local> getOutLocal()
+                    {
+                        return outLocal;
+                    }
+                    public Pin<T> getOutValue()
+                    {
+                        return outValue;
+                    }
+                }
+            }
+        }
+    }
+    interface Client
+    {
     }
 
     static Identifier identifierServer(long id)
@@ -125,6 +174,19 @@ public interface GraphNodes
         public Pin<I0> getIn0()
         {
             return in0;
+        }
+    }
+    class Statement2_0<I0, I1> extends Statement1_0<I0>
+    {
+        Pin<I1> in1;
+        public Statement2_0(Identifier idShell, Identifier idKernel, GenshinType<I0> in0, GenshinType<I1> in1)
+        {
+            super(idShell, idKernel, in0);
+            this.in1 = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 1, Optional.of(in1)));
+        }
+        public Pin<I1> getIn1()
+        {
+            return in1;
         }
     }
 

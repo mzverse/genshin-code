@@ -388,10 +388,10 @@ message TypedValue {
   oneof storage {
     Id               val_id     = 101; // 实体/GUID 等 ID 类型
     Int              val_int    = 102; // 整数
-    Float            val_float  = 104; // 浮点
+    Flt              val_float  = 104; // 浮点
     Str              val_string = 105; // 字符串
     Enum             val_enum   = 106; // 枚举索引
-    Vector           val_vector = 107; // 向量
+    Vec           val_vector = 107; // 向量
     StructStorage    val_struct = 108; // 结构体数据
     ListStorage      val_list   = 109; // 数组数据
     PolymorphicValue val_poly   = 110; // 多态数值数据
@@ -406,13 +406,13 @@ message Id { int64 value = 1; }
 
 message Int { int32 value = 1; }
 
-message Float { float value = 1; }
+message Flt { float value = 1; }
 
 message Str { string value = 1; }
 
 message Enum { int64 value = 1; }
 
-message Vector {
+message Vec {
   message Value {
     float x = 1;
     float y = 2;
@@ -421,9 +421,9 @@ message Vector {
   Value value = 1;
 }
 
-message StructStorage { repeated TypedValue fields = 1; }
+message StructStorage { repeated TypedValue field = 1; }
 
-message ListStorage { repeated TypedValue elements = 1; }
+message ListStorage { repeated TypedValue element = 1; }
 
 message MapStorage {
   repeated TypedValue pairs = 1;
