@@ -1,7 +1,7 @@
 plugins {
     `java-library`
     application
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm") version "2.2.20"
 
     id("com.google.protobuf") version "0.9.4"
 }
@@ -17,6 +17,13 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_5)
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_5)
+    }
+}
 
 protobuf {
     protoc {
@@ -25,7 +32,7 @@ protobuf {
 }
 
 dependencies {
-    api("com.google.protobuf:protobuf-java:3.25.1")
+    api("com.google.protobuf:protobuf-java:4.28.2")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

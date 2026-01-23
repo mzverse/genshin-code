@@ -52,6 +52,15 @@ public class GraphNode
             this(definition, Optional.empty(), new HashSet<>());
         }
 
+        public void setValue(T value)
+        {
+            this.value = Optional.of(value);
+        }
+        public void removeValue()
+        {
+            this.value = Optional.empty();
+        }
+
         Set<Map.Entry<GraphNode, Pin<?>>> getConnections()
         {
             return this.connections;

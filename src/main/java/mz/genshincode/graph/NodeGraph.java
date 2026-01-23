@@ -64,7 +64,7 @@ public class NodeGraph
     }
 
     public void autoLayout()
-    {
+    { // TODO
         Map<GraphNode, Point2D.Double> positions = new HashMap<>();
         Random random = ThreadLocalRandom.current();
         for(GraphNode node : this.nodes)

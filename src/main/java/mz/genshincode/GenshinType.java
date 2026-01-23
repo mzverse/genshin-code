@@ -40,7 +40,7 @@ public interface GenshinType<T>
     {
         GenshinType<Local> LOCAL = basic(ServerTypeId.S_LOCAL_VAR_REF, ClientTypeId.CLIENT_UNKNOWN);
 
-        GenshinType<List<Prefab>> PREFAB_LISt = basic(ServerTypeId.S_PREFAB_LIST, ClientTypeId.CLIENT_UNKNOWN, TypedValue.WidgetType.LIST_GROUP, encoderList(PREFAB));
+        GenshinType<List<Prefab>> PREFAB_LIST = basic(ServerTypeId.S_PREFAB_LIST, ClientTypeId.CLIENT_UNKNOWN, TypedValue.WidgetType.LIST_GROUP, encoderList(PREFAB));
         GenshinType<List<Faction>> FACTION_LIST = basic(ServerTypeId.S_FACTION_LIST, ClientTypeId.CLIENT_UNKNOWN, TypedValue.WidgetType.LIST_GROUP, encoderList(FACTION));
 
         final class Local
