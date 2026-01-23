@@ -20,12 +20,23 @@ GenshinCode 是一个基于 Java/Kotlin 的代码生成项目，旨在使用编�
 GenshinCode/
 ├── src/
 │   ├── main/
-│   │   ├── java/mz/genshincode/data/
-│   │   │   ├── GenshinData.java          # 抽象基类，定义数据保存格式
-│   │   │   └── GenshinDataAsset.java     # AssetBundle 数据实现
-│   │   └── proto/mz.genshincode.data/
-│   │       └── gia.proto                 # Protocol Buffers 数据结构定义
+│   │   ├── java/mz/genshincode/
+│   │   │   ├── Main.java                   # 主入口类
+│   │   │   ├── data/
+│   │   │   │   ├── GenshinData.java        # 抽象基类，定义数据保存格式
+│   │   │   │   ├── GenshinDataAssets.java  # AssetBundle 数据实现
+│   │   │   │   └── asset/
+│   │   │   │       └── AssetsGenerator.java # 资产生成器
+│   │   │   └── graph/
+│   │   │       ├── GraphNode.java          # 图节点类
+│   │   │       └── NodeGraph.java          # 节点图类
+│   │   └── proto/mz/genshincode/data/
+│   │       └── asset.proto                 # Protocol Buffers 数据结构定义
 │   └── test/
+├── build.gradle.kts                        # Gradle 构建配置
+├── settings.gradle.kts                     # Gradle 项目设置
+├── gradlew / gradlew.bat                   # Gradle Wrapper 脚本
+└── README.md                               # 项目说明文件
 ```
 
 ## 构建和运行
@@ -55,13 +66,13 @@ GenshinCode/
 由于这是一个库项目，具体运行方式取决于使用场景。通常需要：
 
 1. 创建继承自 `GenshinData` 的子类
-2. 实现 `save(DataOutputStream)` 方法
+2. 实现 `encode()` 和 `getType()` 方法
 3. 调用 `save(File)` 方法保存到 `.gia` 文件
 
 ## 开发约定
 
 ### 代码风格
-- **包命名：** 使用 `mz.genshincode.data` 作为基础包名
+- **包命名：** 使用 `mz.genshincode` 作为基础包名
 - **类命名：** 使用 PascalCase（大驼峰）
 - **方法命名：** 使用 camelCase（小驼峰）
 - **常量命名：** 使用 UPPER_SNAKE_CASE
@@ -70,19 +81,19 @@ GenshinCode/
 
 **核心数据结构：**
 - `AssetBundle`：顶层资产容器，包含所有生成的资源
-- `ResourceEntry`：资源物理容器，定义资源的类型和载荷
-- `ResourceLocator`：资源标识符系统，包含来源域、服务域和类型域
+- `Asset`：资源物理容器，定义资源的类型和载荷
+- `Identifier`：资源标识符系统，包含来源域、服务域和类型域
 
 **资源类型分类：**
-- `ResourceClass`：业务类型枚举（OBJECT、CREATION、ENTITY、SKILL 等）
+- `Asset.Type`：业务类型枚举（OBJECT、CREATION、ENTITY、SKILL、NODE_GRAPH 等）
 - `ServerTypeId`：服务器端逻辑类型 ID（用于后端逻辑运算）
 - `ClientTypeId`：客户端表现类型 ID（用于 UI 渲染）
 
 **节点图系统：**
-- `NodeGraph`：逻辑容器，包含节点实例、接口映射、变量池等
+- `NodeGraphData`：逻辑容器，包含节点实例、接口映射、变量池等
 - `NodeInterface`：复合节点接口定义，定义对外签名
 - `NodeInstance`：节点实例，包含外壳定义、内核实现和引脚参数
-- `PinInstance`：引脚实例，定义引脚签名、值和连接关系
+- `Pin`：引脚实例，定义引脚签名、值和连接关系
 
 ### 文件格式
 
@@ -99,18 +110,18 @@ GenshinCode/
 
 ### 引用项目
 
-本项目的 `gia.proto` 数据结构参考自：
+本项目的 `asset.proto` 数据结构参考自：
 - [Genshin-Impact-Miliastra-Wonderland-Code-Node-Editor-Pack](https://github.com/Wu-Yijun/Genshin-Impact-Miliastra-Wonderland-Code-Node-Editor-Pack)
 
 如果只想以 TypeScript 方式无损编辑节点图，可以参考上述项目。
 
 ## 关键概念
 
-### 资源标识符（ResourceLocator）
+### 资源标识符（Identifier）
 
 资源标识符由三个域组成：
 
-1. **Origin（来源域）：**
+1. **Source（来源域）：**
    - `USER_DEFINED` (10000)：用户资产
    - `SYSTEM_DEFINED` (10001)：系统内置
 
@@ -138,13 +149,31 @@ GenshinCode/
 项目使用两套类型系统：
 
 **服务器端类型（ServerTypeId）：**
-- 基础类型：ENTITY(1), GUID(2), INT(3), BOOL(4), FLOAT(5), STRING(6), VECTOR(12)
-- 列表类型：GUID_LIST(7), INT_LIST(8), BOOL_LIST(9), FLOAT_LIST(10), STRING_LIST(11), ENTITY_LIST(13)
-- 复杂类型：STRUCT(25), STRUCT_LIST(26), DICT(27)
+- 基础类型：S_ENTITY(1), S_GUID(2), S_INT(3), S_BOOL(4), S_FLOAT(5), S_STRING(6), S_VECTOR(12)
+- 列表类型：S_GUID_LIST(7), S_INT_LIST(8), S_BOOL_LIST(9), S_FLOAT_LIST(10), S_STRING_LIST(11), S_ENTITY_LIST(13)
+- 复杂类型：S_STRUCT(25), S_STRUCT_LIST(26), S_DICT(27)
 
 **客户端类型（ClientTypeId）：**
 - 采用更紧凑的编号方式（List = Base + 1）
 - 不支持 Map/Struct 类型
+
+## 核心类说明
+
+### GenshinData.java
+抽象基类，定义了 `.gia` 文件的基本格式和保存方法。包含以下类型：
+- PROJECT(1)
+- LEVEL(2)
+- ASSETS(3) 
+- RUNTIME(4)
+
+### GenshinDataAssets.java
+资产数据类，用于将 AssetBundle 对象保存为 `.gia` 文件。
+
+### AssetsGenerator.java
+资产生成器，负责生成 AssetBundle 并分配 GUID。
+
+### NodeGraph.java 和 GraphNode.java
+节点图相关类，用于构建节点图结构。
 
 ## 测试
 
@@ -162,19 +191,20 @@ GenshinCode/
 
 ## 版本信息
 
-- **引擎版本：** 6.2.0
+- **引擎版本：** 6.3.0
 - **Protocol Buffers 版本：** 3.25.1
 - **项目版本：** 1.0-SNAPSHOT
 
 ## 注意事项
 
 1. 本项目生成的节点图数据是**不可逆的**，无法反向转换为代码
-2. Protocol Buffers 定义文件（`gia.proto`）是数据结构的核心，修改后需要重新生成代码
+2. Protocol Buffers 定义文件（`asset.proto`）是数据结构的核心，修改后需要重新生成代码
 3. 节点图的生成过程是单向的：代码 → 节点图数据
 4. 系统内置节点使用 `SYSTEM_DEFINED` 来源，用户自定义节点使用 `USER_DEFINED` 来源
 
 ## TODO
 
+- [ ] 完善 NodeGraph 的 generateAssets 方法
 - [ ] 添加更多示例代码
 - [ ] 完善文档
 - [ ] 添加单元测试

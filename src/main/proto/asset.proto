@@ -367,9 +367,9 @@ message TypedValue {
     MAP_PAIR_ITEM = 10007; // 键值对子项
   }
 
-  WidgetType              widget       = 1; // 样式类
-  int32                   is_value_set = 2; // 0=空值, 1=用户已修改
-  optional TypeDefinition type_def     = 4; // 类型元数据
+  WidgetType              widget = 1; // 样式类
+  bool                    is_set = 2; // 0=空值, 1=用户已修改
+  optional TypeDefinition type   = 4; // 类型元数据
 
   // 结构体实例追踪（用于在图中生成唯一的索引名）
   message InstanceTracker {
@@ -402,23 +402,23 @@ message TypedValue {
 
 // 辅助存储结构
 
-message Id { int64 id = 1; }
+message Id { int64 value = 1; }
 
-message Int { int32 int = 1; }
+message Int { int32 value = 1; }
 
-message Float { float float = 1; }
+message Float { float value = 1; }
 
-message Str { string str = 1; }
+message Str { string value = 1; }
 
-message Enum { int64 enum = 1; }
+message Enum { int64 value = 1; }
 
 message Vector {
-  message Vec {
+  message Value {
     float x = 1;
     float y = 2;
     float z = 3;
   }
-  Vec vec = 1;
+  Value value = 1;
 }
 
 message StructStorage { repeated TypedValue fields = 1; }
@@ -739,7 +739,7 @@ message NodeInstance {
   optional Identifier kernel_ref = 3;
 
   // 引脚与参数
-  repeated Pin pin = 4;
+  repeated PinData pin = 4;
 
   float x_pos = 5;
   float y_pos = 6;
@@ -801,17 +801,17 @@ message SignalSignature {
 }
 
 // 引脚实例 (运行时状态)
-message Pin {
+message PinData {
   // 双重索引系统
   PinSignature shell_sig  = 1; // i1: 对应 Shell 定义的 UI 槽位
   PinSignature kernel_sig = 2; // i2: 对应 Kernel 实现的 参数 槽位
 
   // 值与类型
   TypedValue value = 3;
-  int32      type  = 4; // Be careful! ServerTypeId in Server and ClientVarType in Client
+  optional int32      type  = 4; // Be careful! ServerTypeId in Server and ClientVarType in Client
 
   // 连接关系
-  repeated NodeConnection connections = 5;
+  repeated NodeConnection connection = 5;
 
   // 动态绑定信息
 

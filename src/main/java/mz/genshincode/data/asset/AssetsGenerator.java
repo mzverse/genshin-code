@@ -1,5 +1,6 @@
 package mz.genshincode.data.asset;
 
+import mz.genshincode.GenshinSide;
 import mz.genshincode.data.GenshinDataAssets;
 
 import java.util.ArrayList;
@@ -8,17 +9,31 @@ import java.util.List;
 public class AssetsGenerator
 {
     AssetBundle.Mode mode = AssetBundle.Mode.OVERLIMIT;
+    GenshinSide side = GenshinSide.SERVER;
 
     List<Asset> assets = new ArrayList<>();
     List<Asset> dependencies = new ArrayList<>();
 
+    public AssetBundle.Mode getMode()
+    {
+        return this.mode;
+    }
     public void setMode(AssetBundle.Mode value)
     {
         this.mode = value;
     }
 
-    int nextGuid = 1 << 30 + 1;
-    public int allocateGuid()
+    public GenshinSide getSide()
+    {
+        return this.side;
+    }
+    public void setSide(GenshinSide side)
+    {
+        this.side = side;
+    }
+
+    long nextGuid = (1L << 30) + 1L;
+    public long allocateGuid()
     {
         return this.nextGuid++;
     }
