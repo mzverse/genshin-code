@@ -5,30 +5,21 @@ import mz.genshincode.data.asset.AssetBundle
 import mz.genshincode.data.asset.AssetsGenerator
 import mz.genshincode.graph.GraphNodes
 import mz.genshincode.graph.NodeGraph
+import mz.genshincode.graph.dsl.NodeGraph
+import mz.genshincode.graph.dsl.asString
+import mz.genshincode.graph.dsl.event.entity.EventEntityCreate
+import mz.genshincode.graph.dsl.log
 import org.junit.jupiter.api.Test
 import java.io.File
 
 class TestGraph {
     @Test
     fun test() {
-        val graph = NodeGraph()
-        val nodeEvent = GraphNodes.Event.Entity.onCreate()
-        val nodeForInt = GraphNodes.Control.ForInt()
-        val nodeCast = GraphNodes.Calc.Cast.intToString()
-        val nodePrint = GraphNodes.Exec.print()
-        graph.addNode(nodeEvent)
-        graph.addNode(nodeForInt)
-        graph.addNode(nodeCast)
-        graph.addNode(nodePrint)
-
-        graph.connect(nodeEvent, nodeEvent.flow, nodeForInt, nodeForInt.flowIn)
-        graph.connect(nodeForInt, nodeForInt.flowBody, nodePrint, nodePrint.flowIn)
-
-        graph.connect(nodeForInt, nodeForInt.outValue, nodeCast, nodeCast.in0)
-        graph.connect(nodeCast, nodeCast.out, nodePrint, nodePrint.in0)
-
-        nodeForInt.inBegin.setValue(114)
-        nodeForInt.inEnd.setValue(514)
+        val graph = NodeGraph {
+            on(EventEntityCreate) { event ->
+                log(event.entity.asString())
+            }
+        }
 
         graph.autoLayout()
         val generator = AssetsGenerator()

@@ -25,12 +25,6 @@ public class NodeGraph
         this.nodes.add(value);
     }
 
-    public <T> void connect(GraphNode node1, GraphNode.Pin<T> pin1, GraphNode node2, GraphNode.Pin<T> pin2)
-    {
-        pin1.connection(node2, pin2);
-        pin2.connection(node1, pin1);
-    }
-
     public void generateAssets(AssetsGenerator generator)
     {
         long guid = generator.allocateGuid();
@@ -111,7 +105,7 @@ public class NodeGraph
                 }
                 for(Point2D.Double p1 : Util.iterable(n.pins.stream()
                     .map(GraphNode.Pin::getConnections).flatMap(Collection::stream)
-                    .map(Map.Entry::getKey)
+                    .map(GraphNode.Pin::getNode)
                     .map(positions::get)))
                 {
                     double dx = p.x - p1.x, dy = p.y - p1.y;

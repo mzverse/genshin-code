@@ -30,18 +30,18 @@ public class GraphNode
 
     public <T> Pin<T> addPin(PinDefinition<T> definition)
     {
-        Pin<T> result = definition.newPin();
+        Pin<T> result = this.new Pin<>(definition);
         this.pins.add(result);
         return result;
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public static class Pin<T>
+    public class Pin<T>
     {
         PinDefinition<T> definition;
         Optional<T> value;
-        Set<Map.Entry<GraphNode, Pin<?>>> connections;
-        public Pin(PinDefinition<T> definition, Optional<T> value, Set<Map.Entry<GraphNode, Pin<?>>> connections)
+        List<Pin<?>> connections;
+        public Pin(PinDefinition<T> definition, Optional<T> value, List<Pin<?>> connections)
         {
             this.definition = definition;
             this.value = value;
@@ -49,7 +49,11 @@ public class GraphNode
         }
         public Pin(PinDefinition<T> definition)
         {
-            this(definition, Optional.empty(), new HashSet<>());
+            this(definition, Optional.empty(), new ArrayList<>());
+        }
+        public GraphNode getNode()
+        {
+            return GraphNode.this;
         }
 
         public void setValue(T value)
@@ -61,13 +65,19 @@ public class GraphNode
             this.value = Optional.empty();
         }
 
-        Set<Map.Entry<GraphNode, Pin<?>>> getConnections()
+        List<Pin<?>> getConnections()
         {
             return this.connections;
         }
-        void connection(GraphNode node, Pin<T> pin)
+
+        public void connect(Pin<T> that)
         {
-            this.connections.add(new AbstractMap.SimpleEntry<>(node, pin));
+            this.connect0(that);
+            that.connect0(this);
+        }
+        void connect0(Pin<T> pin)
+        {
+            this.connections.add(pin);
         }
     }
 
@@ -90,11 +100,6 @@ public class GraphNode
         public PinDefinition(PinSignature.Kind kind, int index, Optional<GenshinType<T>> type)
         {
             this(PinSignature.newBuilder().setKind(kind).setIndex(index).build(), type);
-        }
-
-        public Pin<T> newPin()
-        {
-            return new Pin<>(this);
         }
 
         @Override
@@ -133,12 +138,12 @@ public class GraphNode
                     data.setType(type.getTypeId(side));
                     data.setValue(type.encode(side, pin.value));
                 });
-                for(Map.Entry<GraphNode, Pin<?>> connection : pin.connections)
+                for(Pin<?> connection : pin.connections)
                 {
                     data.addConnection(NodeConnection.newBuilder()
-                        .setTargetNodeIndex(ids.get(connection.getKey()))
-                        .setTargetPinShell(connection.getValue().definition.signShell)
-                        .setTargetPinKernel(connection.getValue().definition.signKernel)
+                        .setTargetNodeIndex(ids.get(connection.getNode()))
+                        .setTargetPinShell(connection.definition.signShell)
+                        .setTargetPinKernel(connection.definition.signKernel)
                     );
                 }
                 builder.addPin(data);

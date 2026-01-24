@@ -10,214 +10,18 @@ import java.util.Optional;
 
 public interface GraphNodes
 {
-    interface Exec
-    {
-        static Statement1_0<String> print()
-        {
-            return new Statement1_0<>(identifierServer(1), identifierServer(1), GenshinType.STRING);
-        }
-        static Statement1_0<GenshinType.Entity> forwardEvent()
-        {
-            return new Statement1_0<>(identifierServer(190), identifierServer(190), GenshinType.ENTITY);
-        }
-    }
-    interface Event
-    {
-        interface Entity
-        {
-            static Trigger2<GenshinType.Entity, GenshinType.Guid> onCreate()
-            {
-                return new Trigger2<>(identifierServer(71), identifierServer(71), GenshinType.ENTITY, GenshinType.GUID);
-            }
-        }
-    }
-    /**
-     * 为避免和关键字冲突，控制节点全部使用大驼峰
-     */
-    interface Control
-    {
-        static NodeIf If()
-        {
-            return new NodeIf();
-        }
-        static NodeSwitch<Integer> SwitchInt(int countCases)
-        {
-            return new NodeSwitch<>(3, GenshinType.INT, GenshinType.INT_LIST, 0, countCases);
-        }
-        static NodeSwitch<String> SwitchString(int countCases)
-        {
-            return new NodeSwitch<>(4, GenshinType.STRING, GenshinType.STRING_LIST, 1, countCases);
-        }
-        static NodeForInt ForInt()
-        {
-            return new NodeForInt();
-        }
-        static Statement0_0 Break()
-        {
-            return new Statement0_0(identifierServer(6), identifierServer(6));
-        }
-        class NodeIf extends GraphNode
-        {
-            Pin<Void> flowIn, flowThen, flowElse;
-            Pin<Boolean> inCondition;
-            public NodeIf()
-            {
-                super(identifierServer(2), identifierServer(2));
-                this.flowIn = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_FLOW, 0, Optional.empty()));
-                this.flowThen = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 0, Optional.empty()));
-                this.flowElse = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 1, Optional.empty()));
-                this.inCondition = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.BOOL)));
-            }
-        }
-        class NodeSwitch<T> extends GraphNode
-        {
-            Pin<Void> flowIn, flowDefault;
-            List<Pin<Void>> flowCases;
-            Pin<T> inControlling;
-            Pin<List<T>> inCases;
-            public NodeSwitch(int id, GenshinType<T> type, GenshinType<List<T>> listType, int selected, int countCases)
-            {
-                super(identifierServer(3), identifierServer(id));
-                this.flowIn = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_FLOW, 0, Optional.empty()));
-                this.flowDefault = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 0, Optional.empty()));
-                this.flowCases = new ArrayList<>();
-                for(int i = 0; i < countCases; i++)
-                    this.flowCases.add(this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 1 + i, Optional.empty())));
-                this.inControlling = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.selected(selected, type))));
-                this.inCases = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 1, Optional.of(GenshinType.selected(selected, listType))));
-            }
-            public void setCases(List<T> value)
-            {
-                this.inCases.setValue(value);
-            }
-            public Pin<Void> getFlowIn()
-            {
-                return flowIn;
-            }
-            public Pin<Void> getFlowDefault()
-            {
-                return flowDefault;
-            }
-            public List<Pin<Void>> getFlowCases()
-            {
-                return flowCases;
-            }
-            public Pin<Void> getFlowCase(int i)
-            {
-                return this.getFlowCases().get(i);
-            }
-            public Pin<T> getInControlling()
-            {
-                return inControlling;
-            }
-            public Pin<List<T>> getInCases()
-            {
-                return inCases;
-            }
-        }
-        class NodeForInt extends GraphNode
-        {
-            Pin<Void> flowIn;
-            Pin<Void> flowBreak;
-            Pin<Void> flowBody;
-            Pin<Void> flowOut;
-            Pin<Integer> inBegin, inEnd, outValue;
-            NodeForInt()
-            {
-                super(identifierServer(5), identifierServer(5));
-                this.flowIn = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_FLOW, 0, Optional.empty()));
-                this.flowBreak = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_FLOW, 1, Optional.empty()));
-                this.flowBody = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 0, Optional.empty()));
-                this.flowOut = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 1, Optional.empty()));
-
-                this.inBegin = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.INT)));
-                this.inEnd = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 1, Optional.of(GenshinType.INT)));
-                this.outValue = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_PARAM, 0, Optional.of(GenshinType.INT)));
-            }
-            public Pin<Void> getFlowIn()
-            {
-                return flowIn;
-            }
-            public Pin<Void> getFlowBreak()
-            {
-                return flowBreak;
-            }
-            public Pin<Void> getFlowBody()
-            {
-                return flowBody;
-            }
-            public Pin<Void> getFlowOut()
-            {
-                return flowOut;
-            }
-            public Pin<Integer> getInBegin()
-            {
-                return inBegin;
-            }
-            public Pin<Integer> getInEnd()
-            {
-                return inEnd;
-            }
-            public Pin<Integer> getOutValue()
-            {
-                return outValue;
-            }
-        }
-    }
-    interface Calc
-    {
-        interface Cast
-        {
-            static Expr1<Boolean, Integer> intToBool()
-            {
-                return new Expr1<>(identifierServer(180), identifierServer(180), GenshinType.selected(0, GenshinType.BOOL), GenshinType.selected(0, GenshinType.INT));
-            }
-            static Expr1<Float, Integer> intToFloat()
-            {
-                return new Expr1<>(identifierServer(180), identifierServer(181), GenshinType.selected(1, GenshinType.FLOAT), GenshinType.selected(0, GenshinType.INT));
-            }
-            static Expr1<String, Integer> intToString()
-            {
-                return new Expr1<>(identifierServer(180), identifierServer(182), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(0, GenshinType.INT));
-            }
-            static Expr1<String, GenshinType.Entity> entityToString()
-            {
-                return new Expr1<>(identifierServer(180), identifierServer(183), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(1, GenshinType.ENTITY));
-            }
-            static Expr1<String, GenshinType.Guid> guidToString()
-            {
-                return new Expr1<>(identifierServer(180), identifierServer(184), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(2, GenshinType.GUID));
-            }
-            static Expr1<Integer, Boolean> boolToInt()
-            {
-                return new Expr1<>(identifierServer(180), identifierServer(185), GenshinType.selected(3, GenshinType.INT), GenshinType.selected(3, GenshinType.BOOL));
-            }
-            static Expr1<String, Boolean> boolToString()
-            {
-                return new Expr1<>(identifierServer(180), identifierServer(186), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(3, GenshinType.BOOL));
-            }
-            static Expr1<Integer, Float> floatToInt()
-            {
-                return new Expr1<>(identifierServer(180), identifierServer(187), GenshinType.selected(3, GenshinType.INT), GenshinType.selected(4, GenshinType.FLOAT));
-            }
-            static Expr1<String, Float> floatToString()
-            {
-                return new Expr1<>(identifierServer(180), identifierServer(188), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(4, GenshinType.FLOAT));
-            }
-            static Expr1<String, GenshinType.Vector> vectorToString()
-            {
-                return new Expr1<>(identifierServer(180), identifierServer(189), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(5, GenshinType.VECTOR));
-            }
-            static Expr1<String, GenshinType.Faction> factionToString()
-            {
-                return new Expr1<>(identifierServer(180), identifierServer(255), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(6, GenshinType.FACTION));
-            }
-        }
-    }
     interface Server
     {
         interface Exec
         {
+            static Statement1_0<String> print()
+            {
+                return new Statement1_0<>(identifierServer(1), identifierServer(1), GenshinType.STRING);
+            }
+            static Statement1_0<GenshinType.Entity> forwardEvent()
+            {
+                return new Statement1_0<>(identifierServer(190), identifierServer(190), GenshinType.ENTITY);
+            }
             interface Local
             {
                 static Statement2_0<GenshinType.Server.Local, Boolean> setBool()
@@ -299,6 +103,199 @@ public interface GraphNodes
                 static Statement2_0<GenshinType.Server.Local, List<GenshinType.Faction>> setFactionList()
                 {
                     return new Statement2_0<>(identifierServer(19), identifierServer(2691), GenshinType.Server.LOCAL, GenshinType.selected(19, GenshinType.Server.FACTION_LIST));
+                }
+            }
+        }
+        interface Event
+        {
+            interface Entity
+            {
+                static Trigger2<GenshinType.Entity, GenshinType.Guid> onCreate()
+                {
+                    return new Trigger2<>(identifierServer(71), identifierServer(71), GenshinType.ENTITY, GenshinType.GUID);
+                }
+            }
+        }
+        /**
+         * 为避免和关键字冲突，控制节点全部使用大驼峰
+         */
+        interface Control
+        {
+            static NodeIf If()
+            {
+                return new NodeIf();
+            }
+            static NodeSwitch<Integer> SwitchInt(int countCases)
+            {
+                return new NodeSwitch<>(3, GenshinType.INT, GenshinType.INT_LIST, 0, countCases);
+            }
+            static NodeSwitch<String> SwitchString(int countCases)
+            {
+                return new NodeSwitch<>(4, GenshinType.STRING, GenshinType.STRING_LIST, 1, countCases);
+            }
+            static NodeForInt ForInt()
+            {
+                return new NodeForInt();
+            }
+            static Statement0_0 Break()
+            {
+                return new Statement0_0(identifierServer(6), identifierServer(6));
+            }
+            class NodeIf extends GraphNode
+            {
+                Pin<Void> flowIn, flowThen, flowElse;
+                Pin<Boolean> inCondition;
+                public NodeIf()
+                {
+                    super(identifierServer(2), identifierServer(2));
+                    this.flowIn = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_FLOW, 0, Optional.empty()));
+                    this.flowThen = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 0, Optional.empty()));
+                    this.flowElse = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 1, Optional.empty()));
+                    this.inCondition = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.BOOL)));
+                }
+            }
+            class NodeSwitch<T> extends GraphNode
+            {
+                Pin<Void> flowIn, flowDefault;
+                List<Pin<Void>> flowCases;
+                Pin<T> inControlling;
+                Pin<List<T>> inCases;
+                public NodeSwitch(int id, GenshinType<T> type, GenshinType<List<T>> listType, int selected, int countCases)
+                {
+                    super(identifierServer(3), identifierServer(id));
+                    this.flowIn = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_FLOW, 0, Optional.empty()));
+                    this.flowDefault = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 0, Optional.empty()));
+                    this.flowCases = new ArrayList<>();
+                    for(int i = 0; i < countCases; i++)
+                        this.flowCases.add(this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 1 + i, Optional.empty())));
+                    this.inControlling = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.selected(selected, type))));
+                    this.inCases = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 1, Optional.of(GenshinType.selected(selected, listType))));
+                }
+                public void setCases(List<T> value)
+                {
+                    this.inCases.setValue(value);
+                }
+                public Pin<Void> getFlowIn()
+                {
+                    return flowIn;
+                }
+                public Pin<Void> getFlowDefault()
+                {
+                    return flowDefault;
+                }
+                public List<Pin<Void>> getFlowCases()
+                {
+                    return flowCases;
+                }
+                public Pin<Void> getFlowCase(int i)
+                {
+                    return this.getFlowCases().get(i);
+                }
+                public Pin<T> getInControlling()
+                {
+                    return inControlling;
+                }
+                public Pin<List<T>> getInCases()
+                {
+                    return inCases;
+                }
+            }
+            class NodeForInt extends GraphNode
+            {
+                Pin<Void> flowIn;
+                Pin<Void> flowBreak;
+                Pin<Void> flowBody;
+                Pin<Void> flowOut;
+                Pin<Integer> inBegin, inEnd, outValue;
+                NodeForInt()
+                {
+                    super(identifierServer(5), identifierServer(5));
+                    this.flowIn = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_FLOW, 0, Optional.empty()));
+                    this.flowBreak = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_FLOW, 1, Optional.empty()));
+                    this.flowBody = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 0, Optional.empty()));
+                    this.flowOut = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 1, Optional.empty()));
+
+                    this.inBegin = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.INT)));
+                    this.inEnd = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 1, Optional.of(GenshinType.INT)));
+                    this.outValue = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_PARAM, 0, Optional.of(GenshinType.INT)));
+                }
+                public Pin<Void> getFlowIn()
+                {
+                    return flowIn;
+                }
+                public Pin<Void> getFlowBreak()
+                {
+                    return flowBreak;
+                }
+                public Pin<Void> getFlowBody()
+                {
+                    return flowBody;
+                }
+                public Pin<Void> getFlowOut()
+                {
+                    return flowOut;
+                }
+                public Pin<Integer> getInBegin()
+                {
+                    return inBegin;
+                }
+                public Pin<Integer> getInEnd()
+                {
+                    return inEnd;
+                }
+                public Pin<Integer> getOutValue()
+                {
+                    return outValue;
+                }
+            }
+        }
+        interface Calc
+        {
+            interface Cast
+            {
+                static Expr1<Boolean, Integer> intToBool()
+                {
+                    return new Expr1<>(identifierServer(180), identifierServer(180), GenshinType.selected(0, GenshinType.BOOL), GenshinType.selected(0, GenshinType.INT));
+                }
+                static Expr1<Float, Integer> intToFloat()
+                {
+                    return new Expr1<>(identifierServer(180), identifierServer(181), GenshinType.selected(1, GenshinType.FLOAT), GenshinType.selected(0, GenshinType.INT));
+                }
+                static Expr1<String, Integer> intToString()
+                {
+                    return new Expr1<>(identifierServer(180), identifierServer(182), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(0, GenshinType.INT));
+                }
+                static Expr1<String, GenshinType.Entity> entityToString()
+                {
+                    return new Expr1<>(identifierServer(180), identifierServer(183), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(1, GenshinType.ENTITY));
+                }
+                static Expr1<String, GenshinType.Guid> guidToString()
+                {
+                    return new Expr1<>(identifierServer(180), identifierServer(184), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(2, GenshinType.GUID));
+                }
+                static Expr1<Integer, Boolean> boolToInt()
+                {
+                    return new Expr1<>(identifierServer(180), identifierServer(185), GenshinType.selected(3, GenshinType.INT), GenshinType.selected(3, GenshinType.BOOL));
+                }
+                static Expr1<String, Boolean> boolToString()
+                {
+                    return new Expr1<>(identifierServer(180), identifierServer(186), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(3, GenshinType.BOOL));
+                }
+                static Expr1<Integer, Float> floatToInt()
+                {
+                    return new Expr1<>(identifierServer(180), identifierServer(187), GenshinType.selected(3, GenshinType.INT), GenshinType.selected(4, GenshinType.FLOAT));
+                }
+                static Expr1<String, Float> floatToString()
+                {
+                    return new Expr1<>(identifierServer(180), identifierServer(188), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(4, GenshinType.FLOAT));
+                }
+                static Expr1<String, GenshinType.Vector> vectorToString()
+                {
+                    return new Expr1<>(identifierServer(180), identifierServer(189), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(5, GenshinType.VECTOR));
+                }
+                static Expr1<String, GenshinType.Faction> factionToString()
+                {
+                    return new Expr1<>(identifierServer(180), identifierServer(255), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(6, GenshinType.FACTION));
                 }
             }
         }
@@ -530,30 +527,30 @@ public interface GraphNodes
             return flow;
         }
     }
-    class Trigger1<D0> extends Trigger0
+    class Trigger1<O0> extends Trigger0
     {
-        Pin<D0> data0;
-        public Trigger1(Identifier idShell, Identifier idKernel, GenshinType<D0> data0)
+        Pin<O0> out0;
+        public Trigger1(Identifier idShell, Identifier idKernel, GenshinType<O0> out0)
         {
             super(idShell, idKernel);
-            this.data0 = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_PARAM, 0, Optional.of(data0)));
+            this.out0 = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_PARAM, 0, Optional.of(out0)));
         }
-        public Pin<D0> getData0()
+        public Pin<O0> getOut0()
         {
-            return data0;
+            return out0;
         }
     }
-    class Trigger2<D0, D1> extends Trigger1<D0>
+    class Trigger2<O0, O1> extends Trigger1<O0>
     {
-        Pin<D1> data1;
-        public Trigger2(Identifier idShell, Identifier idKernel, GenshinType<D0> data0, GenshinType<D1> data1)
+        Pin<O1> out1;
+        public Trigger2(Identifier idShell, Identifier idKernel, GenshinType<O0> data0, GenshinType<O1> out1)
         {
             super(idShell, idKernel, data0);
-            this.data1 = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_PARAM, 1, Optional.of(data1)));
+            this.out1 = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_PARAM, 1, Optional.of(out1)));
         }
-        public Pin<D1> getData1()
+        public Pin<O1> getOut1()
         {
-            return data1;
+            return out1;
         }
     }
 }

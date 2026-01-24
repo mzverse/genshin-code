@@ -137,9 +137,10 @@ message Identifier {
     SERVER_ITEM   = 20005; // 后端: 道具
 
     // Client Side Node Types
-    CLIENT_FILTER     = 20001; // 过滤器类型(默认 Bool)
-    CLIENT_SKILL      = 20002; // 技能节点图流程(客户端)
-    CLIENT_INT_FILTER = 20006; // 整数过滤器类型
+    CLIENT_FILTER         = 20001; // 过滤器类型(默认 Bool)
+    CLIENT_SKILL          = 20002; // 技能节点图流程(客户端)
+    CLIENT_INT_FILTER     = 20006; // 整数过滤器类型
+    CLIENT_CREATION_STATE = 20007; // 造物状态
   }
 
   // AssetKind/Kind (原型域/数据结构)：
