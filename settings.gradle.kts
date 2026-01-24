@@ -1,1 +1,1 @@
-rootProject.name = "GenshinCode"
+rootProject.name = "genshin-code"

@@ -13,7 +13,7 @@ class TestGraph {
     fun test() {
         val graph = NodeGraph()
         val nodeEvent = GraphNodes.Event.Entity.onCreate()
-        val nodeForInt = GraphNodes.Exec.forInt()
+        val nodeForInt = GraphNodes.Control.ForInt()
         val nodeCast = GraphNodes.Calc.Cast.intToString()
         val nodePrint = GraphNodes.Exec.print()
         graph.addNode(nodeEvent)

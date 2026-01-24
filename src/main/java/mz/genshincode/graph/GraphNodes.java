@@ -4,6 +4,7 @@ import mz.genshincode.GenshinType;
 import mz.genshincode.data.asset.Identifier;
 import mz.genshincode.data.asset.PinSignature;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,26 +16,113 @@ public interface GraphNodes
         {
             return new Statement1_0<>(identifierServer(1), identifierServer(1), GenshinType.STRING);
         }
-        static ForInt forInt()
-        {
-            return new ForInt();
-        }
-        static Statement0_0 breakLoop()
-        {
-            return new Statement0_0(identifierServer(6), identifierServer(6));
-        }
         static Statement1_0<GenshinType.Entity> forwardEvent()
         {
             return new Statement1_0<>(identifierServer(190), identifierServer(190), GenshinType.ENTITY);
         }
-        class ForInt extends GraphNode
+    }
+    interface Event
+    {
+        interface Entity
+        {
+            static Trigger2<GenshinType.Entity, GenshinType.Guid> onCreate()
+            {
+                return new Trigger2<>(identifierServer(71), identifierServer(71), GenshinType.ENTITY, GenshinType.GUID);
+            }
+        }
+    }
+    /**
+     * 为避免和关键字冲突，控制节点全部使用大驼峰
+     */
+    interface Control
+    {
+        static NodeIf If()
+        {
+            return new NodeIf();
+        }
+        static NodeSwitch<Integer> SwitchInt(int countCases)
+        {
+            return new NodeSwitch<>(3, GenshinType.INT, GenshinType.INT_LIST, 0, countCases);
+        }
+        static NodeSwitch<String> SwitchString(int countCases)
+        {
+            return new NodeSwitch<>(4, GenshinType.STRING, GenshinType.STRING_LIST, 1, countCases);
+        }
+        static NodeForInt ForInt()
+        {
+            return new NodeForInt();
+        }
+        static Statement0_0 Break()
+        {
+            return new Statement0_0(identifierServer(6), identifierServer(6));
+        }
+        class NodeIf extends GraphNode
+        {
+            Pin<Void> flowIn, flowThen, flowElse;
+            Pin<Boolean> inCondition;
+            public NodeIf()
+            {
+                super(identifierServer(2), identifierServer(2));
+                this.flowIn = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_FLOW, 0, Optional.empty()));
+                this.flowThen = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 0, Optional.empty()));
+                this.flowElse = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 1, Optional.empty()));
+                this.inCondition = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.BOOL)));
+            }
+        }
+        class NodeSwitch<T> extends GraphNode
+        {
+            Pin<Void> flowIn, flowDefault;
+            List<Pin<Void>> flowCases;
+            Pin<T> inControlling;
+            Pin<List<T>> inCases;
+            public NodeSwitch(int id, GenshinType<T> type, GenshinType<List<T>> listType, int selected, int countCases)
+            {
+                super(identifierServer(3), identifierServer(id));
+                this.flowIn = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_FLOW, 0, Optional.empty()));
+                this.flowDefault = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 0, Optional.empty()));
+                this.flowCases = new ArrayList<>();
+                for(int i = 0; i < countCases; i++)
+                    this.flowCases.add(this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 1 + i, Optional.empty())));
+                this.inControlling = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.selected(selected, type))));
+                this.inCases = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 1, Optional.of(GenshinType.selected(selected, listType))));
+            }
+            public void setCases(List<T> value)
+            {
+                this.inCases.setValue(value);
+            }
+            public Pin<Void> getFlowIn()
+            {
+                return flowIn;
+            }
+            public Pin<Void> getFlowDefault()
+            {
+                return flowDefault;
+            }
+            public List<Pin<Void>> getFlowCases()
+            {
+                return flowCases;
+            }
+            public Pin<Void> getFlowCase(int i)
+            {
+                return this.getFlowCases().get(i);
+            }
+            public Pin<T> getInControlling()
+            {
+                return inControlling;
+            }
+            public Pin<List<T>> getInCases()
+            {
+                return inCases;
+            }
+        }
+        class NodeForInt extends GraphNode
         {
             Pin<Void> flowIn;
             Pin<Void> flowBreak;
             Pin<Void> flowBody;
             Pin<Void> flowOut;
             Pin<Integer> inBegin, inEnd, outValue;
-            ForInt()
+            NodeForInt()
             {
                 super(identifierServer(5), identifierServer(5));
                 this.flowIn = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_FLOW, 0, Optional.empty()));
@@ -73,16 +161,6 @@ public interface GraphNodes
             public Pin<Integer> getOutValue()
             {
                 return outValue;
-            }
-        }
-    }
-    interface Event
-    {
-        interface Entity
-        {
-            static Trigger2<GenshinType.Entity, GenshinType.Guid> onCreate()
-            {
-                return new Trigger2<>(identifierServer(71), identifierServer(71), GenshinType.ENTITY, GenshinType.GUID);
             }
         }
     }
