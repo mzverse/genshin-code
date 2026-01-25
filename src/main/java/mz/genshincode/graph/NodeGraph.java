@@ -24,6 +24,10 @@ public class NodeGraph
     {
         this.nodes.add(value);
     }
+    public void addNodes(Set<GraphNode> values)
+    {
+        this.nodes.addAll(values);
+    }
 
     public void generateAssets(AssetsGenerator generator)
     {
@@ -66,7 +70,7 @@ public class NodeGraph
             positions.put(node, new Point2D.Double(random.nextDouble(), random.nextDouble()));
         }
         double length = 100;
-        double strengthX = 0.02, strength1 = 1000, strength2 = 0.01;
+        double strengthData = 0.02, strengthFlow = 0.05, strength1 = 1000, strength2 = 0.01;
         int time = 10000;
         double timeStep = 1;
         while(time --> 0)
@@ -81,13 +85,17 @@ public class NodeGraph
                         continue;
                     switch(pin.definition.signShell.getKind())
                     {
-                        case OUT_FLOW:
                         case OUT_PARAM:
-                            force.x -= strengthX;
+                            force.x -= strengthData;
+                            break;
+                        case IN_PARAM:
+                            force.x += strengthData;
+                            break;
+                        case OUT_FLOW:
+                            force.x -= strengthFlow;
                             break;
                         case IN_FLOW:
-                        case IN_PARAM:
-                            force.x += strengthX;
+                            force.x += strengthFlow;
                             break;
                         default: // TODO
                             break;

@@ -1,8 +1,8 @@
-package mz.genshincode.graph.dsl
+package mz.genshincode.graph.gen
 
 import mz.genshincode.graph.GraphNodes
 
-fun StatementsDsl.log(expr: Expr<String>) {
+fun StatementGenerator.log(expr: Expr<String>) {
     val node = GraphNodes.Server.Exec.print()
     when(expr) {
         is ExprConst ->
@@ -10,5 +10,5 @@ fun StatementsDsl.log(expr: Expr<String>) {
         is ExprNodes ->
             node.in0.connect(expr.pin)
     }
-    this.append(Statement(expr.nodes + node, node.flowIn, node.flowOut))
+    this.append(Statement(expr.nodes + node, listOf(node.flowIn)))
 }

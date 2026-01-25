@@ -75,6 +75,10 @@ public class GraphNode
             this.connect0(that);
             that.connect0(this);
         }
+        public void connectAll(List<Pin<T>> those)
+        {
+            those.forEach(this::connect);
+        }
         void connect0(Pin<T> pin)
         {
             this.connections.add(pin);

@@ -124,7 +124,7 @@ message Identifier {
     UNKNOWN_CATEGORY = 0;
 
     // 资产类型
-    DEFAULT           = 1; // 该类别下的资源使用kind来判定具体结构，否则不会存在kind
+    DEFAULT           = 1; // 该类别下的资源使用kind来判定具体结构，否则不会存在kind(X)
     SERVER_NODE_GRAPH = 5; // 服务器节点图
     NODE_DECL         = 23; // 节点接口声明
     GLOBAL_TIMER      = 24; // 全局计时器

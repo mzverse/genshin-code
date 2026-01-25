@@ -9,6 +9,8 @@
 
 因为我说白了这节点图的架构本身就是一坨屎，你直接用代码表示也无济于事，必须采用更优雅的封装
 
+### 项目正在积极开发中，尽情期待
+
 ## 层级
 
 1. proto格式和文件级别的封装（`mz.genshincode.data`）
@@ -20,3 +22,51 @@
 3. Kotlin dsl生成节点图
 
 4. TODO: 将Java编译为节点图
+
+## Kotlin DSL
+
+示例
+```kotlin
+val graph = NodeGraph {
+    on(EventEntityCreate) { event ->
+        If(event.guid eq guid(114514L)) {
+            log(event.entity.asString())
+        } Else {
+            log(event.guid.asString())
+        }
+    }
+}
+
+graph.autoLayout()
+val generator = AssetsGenerator()
+generator.setMode(AssetBundle.Mode.OVERLIMIT)
+graph.generateAssets(generator)
+generator.toData().save(File("test.gia"))
+```
+
+只需使用`NodeGraph {}`构造节点图，其中：
+
+### 监听事件
+
+```kotlin
+on(EventType) { event ->
+    // do sth.
+}
+```
+其中`EventType`是事件类型，`event`中包含事件提供的各参数（表达式）
+
+### 控制流
+
+条件控制使用`If`，后可接`Else`
+```kotlin
+If(condition) {
+    // do then
+}
+```
+```kotlin
+If(condition) {
+    // do then
+} Else {
+    // do else
+}
+```

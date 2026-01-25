@@ -61,10 +61,7 @@ public interface GenshinType<T>
     }
     static <T> void encodeList(TypedValue.Builder builder, List<T> value, GenshinType<T> elementType)
     {
-        builder.setValList(ListStorage.newBuilder().addAllElement(value.stream().map(i -> TypedValue.newBuilder(elementType.encode(GenshinSide.SERVER, Optional.of(i)))
-            .clearWidget()
-            .clearIsSet()
-            .clearType()
+        builder.setValList(ListStorage.newBuilder().addAllElement(value.stream().map(i -> TypedValue.newBuilder(elementType.encode(GenshinSide.SERVER, Optional.of(i))) // FIXME
             .build()).collect(Collectors.toList())));
     }
 

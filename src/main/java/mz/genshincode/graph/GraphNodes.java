@@ -153,6 +153,22 @@ public interface GraphNodes
                     this.flowElse = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 1, Optional.empty()));
                     this.inCondition = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.BOOL)));
                 }
+                public Pin<Void> getFlowIn()
+                {
+                    return flowIn;
+                }
+                public Pin<Void> getFlowThen()
+                {
+                    return flowThen;
+                }
+                public Pin<Void> getFlowElse()
+                {
+                    return flowElse;
+                }
+                public Pin<Boolean> getInCondition()
+                {
+                    return inCondition;
+                }
             }
             class NodeSwitch<T> extends GraphNode
             {
@@ -251,6 +267,53 @@ public interface GraphNodes
         }
         interface Calc
         {
+            interface IsEqual
+            {
+                static Expr2<Boolean, String, String> ofString()
+                {
+                    return node(14, 0, GenshinType.STRING);
+                }
+                static Expr2<Boolean, GenshinType.Guid, GenshinType.Guid> ofGuid()
+                {
+                    return node(15, 1, GenshinType.GUID);
+                }
+                static Expr2<Boolean, GenshinType.Entity, GenshinType.Entity> ofEntity()
+                {
+                    return node(16, 2, GenshinType.ENTITY);
+                }
+                static Expr2<Boolean, GenshinType.Vector, GenshinType.Vector> ofVector()
+                {
+                    return node(17, 3, GenshinType.VECTOR);
+                }
+                static Expr2<Boolean, GenshinType.Faction, GenshinType.Faction> ofFaction()
+                {
+                    return node(254, 4, GenshinType.FACTION);
+                }
+                static Expr2<Boolean, Integer, Integer> ofInt()
+                {
+                    return node(370, 5, GenshinType.INT);
+                }
+                static Expr2<Boolean, Float, Float> ofFloat()
+                {
+                    return node(371, 6, GenshinType.FLOAT);
+                }
+                static Expr2<Boolean, GenshinType.Config, GenshinType.Config> ofConfig()
+                {
+                    return node(581, 7, GenshinType.CONFIG);
+                }
+                static Expr2<Boolean, GenshinType.Prefab, GenshinType.Prefab> ofPrefab()
+                {
+                    return node(582, 8, GenshinType.PREFAB);
+                }
+                static Expr2<Boolean, Boolean, Boolean> ofBool()
+                {
+                    return node(786, 9, GenshinType.BOOL);
+                }
+                static <T> Expr2<Boolean, T, T> node(long id, int index, GenshinType<T> type)
+                {
+                    return new Expr2<>(identifierServer(14), identifierServer(id), GenshinType.BOOL, GenshinType.selected(index, type), GenshinType.selected(index, type));
+                }
+            }
             interface Cast
             {
                 static Expr1<Boolean, Integer> intToBool()
