@@ -1,14 +1,22 @@
 package mz.genshincode.graph.gen
 
+import mz.genshincode.GenshinType
 import mz.genshincode.graph.GraphNodes
 
-fun StatementGenerator.log(expr: Expr<String>) {
+fun StatementGenerator.log(message: Expr<String>) {
     val node = GraphNodes.Server.Exec.print()
-    when(expr) {
-        is ExprConst ->
-            node.in0.setValue(expr.value)
-        is ExprNodes ->
-            node.in0.connect(expr.pin)
-    }
-    this.append(Statement(expr.nodes + node, listOf(node.flowIn)))
+    message.apply(node.in0)
+    this.append(Statement(setOf(node), listOf(node.flowIn)))
+}
+@JvmName("logInt")
+fun StatementGenerator.log(message: Expr<Int>) {
+    log(message.asString())
+}
+@JvmName("logEntity")
+fun StatementGenerator.log(message: Expr<GenshinType.Entity>) {
+    log(message.asString())
+}
+@JvmName("logGuid")
+fun StatementGenerator.log(message: Expr<GenshinType.Guid>) {
+    log(message.asString())
 }

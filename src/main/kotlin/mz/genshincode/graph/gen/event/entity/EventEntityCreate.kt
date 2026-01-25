@@ -4,8 +4,9 @@ import mz.genshincode.GenshinType
 import mz.genshincode.graph.GraphNodes
 import mz.genshincode.graph.gen.EventDefinition
 import mz.genshincode.graph.gen.Expr
-import mz.genshincode.graph.gen.ExprNodes
+import mz.genshincode.graph.gen.ExprPin
 import mz.genshincode.graph.gen.NodeGraphGenerator
+import mz.genshincode.graph.gen.Statement
 import mz.genshincode.graph.gen.Trigger
 
 data class EventEntityCreate(
@@ -16,8 +17,8 @@ data class EventEntityCreate(
         override fun listen(context: NodeGraphGenerator): Pair<Trigger, EventEntityCreate> {
             val node = GraphNodes.Server.Event.Entity.onCreate()
             return Pair(Trigger(node), EventEntityCreate(
-                ExprNodes(node.out0),
-                ExprNodes(node.out1)
+                ExprPin(node.out0),
+                ExprPin(node.out1)
             ))
         }
     }

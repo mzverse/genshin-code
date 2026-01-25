@@ -4,16 +4,20 @@ import mz.genshincode.GenshinType
 import mz.genshincode.graph.GraphNodes
 
 @JvmName("castEntityToString")
-fun Expr<GenshinType.Entity>.asString(): Expr<String> {
-    val node = GraphNodes.Server.Calc.Cast.entityToString()
-    this.connect(node.in0)
-    return ExprNodes(this.nodes + node, node.out)
-}
+context(context: StatementGenerator)
+fun Expr<GenshinType.Entity>.asString() = cast(GraphNodes.Server.Calc.Cast.entityToString())
 
 @JvmName("castGuidToString")
-fun Expr<GenshinType.Guid>.asString(): Expr<String> {
-    this as ExprNodes // FIXME
-    val node = GraphNodes.Server.Calc.Cast.guidToString()
-    this.connect(node.in0)
-    return ExprNodes(this.nodes + node, node.out)
+context(context: StatementGenerator)
+fun Expr<GenshinType.Guid>.asString() = cast(GraphNodes.Server.Calc.Cast.guidToString())
+
+@JvmName("castIntToString")
+context(context: StatementGenerator)
+fun Expr<Int>.asString() = cast(GraphNodes.Server.Calc.Cast.intToString())
+
+context(context: StatementGenerator)
+private fun <T, R> Expr<T>.cast(node: GraphNodes.Expr1<R, T>): Expr<R> {
+    this.apply(node.in0)
+    context.append(Statement(setOf(node)))
+    return ExprPin(node.out)
 }

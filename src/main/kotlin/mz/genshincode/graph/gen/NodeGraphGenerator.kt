@@ -17,29 +17,19 @@ class StatementGenerator {
     fun append(statement: Statement) {
         this.statements.add(statement)
     }
-    operator fun plus(supplier: StatementSupplier) {
-        this.append(supplier(this))
-    }
+    fun join() = statements.join()
 }
 
 sealed interface Expr<T> {
-    val nodes: Set<GraphNode>
-
-    fun connect(pin: GraphNode.Pin<T>) = when(this) {
-        is ExprNodes ->
+    fun apply(pin: GraphNode.Pin<T>) = when(this) {
+        is ExprPin ->
             pin.connect(this.pin)
         is ExprConst ->
             pin.setValue(this.value)
     }
 }
-data class ExprNodes<T>(override val nodes: Set<GraphNode>, val pin: GraphNode.Pin<T>): Expr<T> {
-    constructor(pin: GraphNode.Pin<T>): this(setOf(pin.node), pin)
-    constructor(node: GraphNodes.Expr0<T>): this(node.out)
-}
-data class ExprConst<T>(val value: T): Expr<T> {
-    override val nodes: Set<GraphNode>
-        get() = emptySet()
-}
+data class ExprPin<T>(val pin: GraphNode.Pin<T>): Expr<T>
+data class ExprConst<T>(val value: T): Expr<T>
 
 data class Trigger(
     val nodes: Set<GraphNode> = HashSet(),
@@ -55,10 +45,11 @@ data class Statement(
     companion object {
         val EMPTY = Statement(emptySet(), emptyList())
     }
+    constructor(node: GraphNodes.Statement0_0): this(setOf(node), listOf(node.flowIn))
+    constructor(nodes: Set<GraphNode>): this(nodes, emptyList())
     operator fun plus(that: Statement) =
         Statement(nodes + that.nodes, flowsIn + that.flowsIn)
 }
-typealias StatementSupplier = (StatementGenerator) -> Statement
 
 fun List<Statement>.join(): Statement =
     fold(Statement.EMPTY) { a, b -> a + b }
