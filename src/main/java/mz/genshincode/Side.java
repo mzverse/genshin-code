@@ -1,6 +1,6 @@
 package mz.genshincode;
 
-public enum GenshinSide
+public enum Side
 {
     SERVER,
     CLIENT,

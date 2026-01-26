@@ -1,6 +1,6 @@
 package mz.genshincode.graph;
 
-import mz.genshincode.GenshinSide;
+import mz.genshincode.Side;
 import mz.genshincode.GenshinType;
 import mz.genshincode.Util;
 import mz.genshincode.data.asset.*;
@@ -122,7 +122,7 @@ public class GraphNode
         }
     }
 
-    NodeInstance encode(GenshinSide side, Map<GraphNode, Integer> ids)
+    NodeInstance encode(Side side, Map<GraphNode, Integer> ids)
     {
         NodeInstance.Builder builder = NodeInstance.newBuilder();
         builder.setIndex(ids.get(this));

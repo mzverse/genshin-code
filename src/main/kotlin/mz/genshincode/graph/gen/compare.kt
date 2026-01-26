@@ -46,7 +46,7 @@ infix fun Expr<Boolean>.eq(that: Expr<Boolean>) =
 
 context(context: StatementGenerator)
 private fun <T> Expr<T>.eq(that: Expr<T>, node: GraphNodes.Expr2<Boolean, T, T>): Expr<Boolean> {
-    context.append(Statement(setOf(node)))
+    context.addNode(node)
     this.apply(node.in0)
     that.apply(node.in1)
     return ExprPin(node.out)

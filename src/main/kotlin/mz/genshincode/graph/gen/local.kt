@@ -72,8 +72,8 @@ private fun <T> StatementGenerator.local(
     setter: (StatementGenerator) -> GraphNodes.Statement2_0<GenshinType.Server.Local, T>
 ): Local<T> {
     init.apply(node.inInit)
-    append(Statement(setOf(node)))
-    return Local(node, setter).apply { set(get()) }
+    addNode(node)
+    return Local(node, setter)//.apply { set(get()) }
 }
 
 data class Local<T>(

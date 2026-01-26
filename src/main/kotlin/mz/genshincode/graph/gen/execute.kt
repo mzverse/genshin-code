@@ -3,20 +3,25 @@ package mz.genshincode.graph.gen
 import mz.genshincode.GenshinType
 import mz.genshincode.graph.GraphNodes
 
-fun StatementGenerator.log(message: Expr<String>) {
-    val node = GraphNodes.Server.Exec.print()
-    message.apply(node.in0)
-    this.append(Statement(setOf(node), listOf(node.flowIn)))
-}
+// TODO
 @JvmName("logInt")
-fun StatementGenerator.log(message: Expr<Int>) {
+context(context: StatementGenerator)
+fun log(message: Expr<Int>) =
     log(message.asString())
-}
 @JvmName("logEntity")
-fun StatementGenerator.log(message: Expr<GenshinType.Entity>) {
+context(context: StatementGenerator)
+fun log(message: Expr<GenshinType.Entity>) =
     log(message.asString())
-}
 @JvmName("logGuid")
-fun StatementGenerator.log(message: Expr<GenshinType.Guid>) {
+context(context: StatementGenerator)
+fun log(message: Expr<GenshinType.Guid>) =
     log(message.asString())
-}
+
+context(context: StatementGenerator)
+fun log(message: String) =
+    log(const(message))
+context(context: StatementGenerator)
+fun log(message: Expr<String>) =
+    context.append(Statement(GraphNodes.Server.Exec.print().also {
+        message.apply(it.in0)
+    }))

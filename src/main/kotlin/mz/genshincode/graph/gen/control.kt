@@ -5,50 +5,50 @@ package mz.genshincode.graph.gen
 import mz.genshincode.graph.GraphNodes
 import kotlin.apply
 
-fun StatementGenerator.If(con: Expr<Boolean>, then: StatementGenerator.() -> Unit): IfContext {
+context(context: StatementGenerator)
+fun If(con: Expr<Boolean>, then: context(StatementGenerator)() -> Unit): IfContext {
     val node = GraphNodes.Server.Control.If()
     con.apply(node.inCondition)
-    val statement = StatementGenerator().apply(then).join()
-    node.flowThen.connectAll(statement.flowsIn)
-    this.append(Statement(statement.nodes + node, listOf(node.flowIn)))
+    context.append(Statement(node, node.flowIn, node.flowThen))
+    then()
+    context.fork(Statement(emptySet(), emptyList(), setOf(node.flowElse))) // connection 2
     return IfContext(node)
 }
 
 data class IfContext(val node: GraphNodes.Server.Control.NodeIf) {
     context(context: StatementGenerator)
     infix fun Else(then: StatementGenerator.() -> Unit) {
-        val statement = StatementGenerator().apply(then).statements.join()
-        node.flowElse.connectAll(statement.flowsIn)
-        context.append(Statement(statement.nodes, emptyList()))
+        context.addNodes((Statement(emptySet(), emptyList(), setOf(node.flowElse))
+                + StatementGenerator().apply(then).statement).nodes) // connection 1
     }
 }
 
-/**
- * @param begin including
- * @param end including
- */
-fun StatementGenerator.ForInt(begin: Expr<Int>, end: Expr<Int>, body: context(LoopContext)StatementGenerator.(Expr<Int>) -> Unit) {
+context(context: StatementGenerator)
+fun Loop(body: context(StatementGenerator)LoopContext.(Expr<Int>) -> Unit) =
+    ForClosed(const(Int.MIN_VALUE), const(Int.MAX_VALUE), body)
+
+context(context: StatementGenerator)
+fun For(start: Expr<Int>, end: Expr<Int>, body: context(StatementGenerator)LoopContext.(Expr<Int>) -> Unit) =
+    ForClosed(start, end - const(1), body)
+
+context(context: StatementGenerator)
+fun ForClosed(start: Expr<Int>, end: Expr<Int>, body: context(StatementGenerator)LoopContext.(Expr<Int>) -> Unit) {
     val node = GraphNodes.Server.Control.ForInt()
-    begin.apply(node.inBegin)
+    start.apply(node.inBegin)
     end.apply(node.inEnd)
-    val statement = StatementGenerator().apply{ LoopContext(node).apply { body(ExprPin(node.outValue)) } }.statements.join()
-    node.flowBody.connectAll(statement.flowsIn)
-    this.append(Statement(statement.nodes + node, listOf(node.flowIn)))
+    context.append(Statement(node, node.flowIn, node.flowBody))
+    LoopContext(node).run {
+        body(ExprPin(node.outValue))
+    }
+    context.append(Statement(emptySet(), emptyList(), setOf(node.flowOut)))
 }
 
 data class LoopContext(internal val node: GraphNodes.Server.Control.NodeForInt)
 
-context(context: LoopContext)
-val StatementGenerator.loop
-    get() = context
-
-fun StatementGenerator.Break(context: LoopContext) {
-    val nodeBreak = GraphNodes.Server.Control.Break()
-    nodeBreak.flowOut.connect(context.node.flowBreak)
-    append(Statement(setOf(nodeBreak), listOf(nodeBreak.flowIn)))
-}
-
-context(context: LoopContext)
-fun StatementGenerator.Break() {
-    Break(loop)
-}
+context(context: StatementGenerator)
+val LoopContext.Break: Unit
+    get() {
+        val nodeBreak = GraphNodes.Server.Control.Break()
+        nodeBreak.flowOut.connect(node.flowBreak)
+        context.append(Statement(setOf(nodeBreak), listOf(nodeBreak.flowIn), emptySet()))
+    }

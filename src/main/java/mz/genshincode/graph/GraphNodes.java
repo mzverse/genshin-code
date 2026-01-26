@@ -361,6 +361,30 @@ public interface GraphNodes
                     return new Expr1<>(identifierServer(180), identifierServer(255), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(6, GenshinType.FACTION));
                 }
             }
+            interface Math
+            {
+                static Expr2<Integer, Integer, Integer> addInt()
+                {
+                    return binarySelected(200, 200, 0, GenshinType.INT);
+                }
+                static Expr2<Float, Float, Float> addFloat()
+                {
+                    return binarySelected(200, 201, 1, GenshinType.FLOAT);
+                }
+                static Expr2<Integer, Integer, Integer> subtractInt()
+                {
+                    return binarySelected(202, 202, 0, GenshinType.INT);
+                }
+                static Expr2<Float, Float, Float> subtractFloat()
+                {
+                    return binarySelected(202, 203, 1, GenshinType.FLOAT);
+                }
+                static <T> Expr2<T, T, T> binarySelected(long idShell, long idKernel, int selected, GenshinType<T> type)
+                {
+                    GenshinType.Selected<T> s = GenshinType.selected(selected, type);
+                    return new Expr2<>(identifierServer(idShell), identifierServer(idKernel), s, s, s);
+                }
+            }
         }
         interface Query
         {

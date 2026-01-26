@@ -1,6 +1,6 @@
 package mz.genshincode.data.asset;
 
-import mz.genshincode.GenshinSide;
+import mz.genshincode.Side;
 import mz.genshincode.data.GenshinDataAssets;
 
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.List;
 public class AssetsGenerator
 {
     AssetBundle.Mode mode = AssetBundle.Mode.OVERLIMIT;
-    GenshinSide side = GenshinSide.SERVER;
+    Side side = Side.SERVER;
 
     List<Asset> assets = new ArrayList<>();
     List<Asset> dependencies = new ArrayList<>();
@@ -23,11 +23,11 @@ public class AssetsGenerator
         this.mode = value;
     }
 
-    public GenshinSide getSide()
+    public Side getSide()
     {
         return this.side;
     }
-    public void setSide(GenshinSide side)
+    public void setSide(Side side)
     {
         this.side = side;
     }

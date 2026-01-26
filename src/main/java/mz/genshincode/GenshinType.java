@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 public interface GenshinType<T>
 {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    TypedValue encode(GenshinSide side, Optional<T> value);
-    int getTypeId(GenshinSide side);
+    TypedValue encode(Side side, Optional<T> value);
+    int getTypeId(Side side);
 
     GenshinType<Boolean> BOOL = basic(ServerTypeId.S_BOOL, ClientTypeId.C_BOOL, TypedValue.WidgetType.ENUM_PICKER, (builder, it) -> builder.setValEnum(Enum.newBuilder().setValue(it ? 1 : 0)));
     GenshinType<Integer> INT = basic(ServerTypeId.S_INT, ClientTypeId.C_INT, TypedValue.WidgetType.NUMBER_INPUT, (builder, it) -> builder.setValInt(Int.newBuilder().setValue(it)));
@@ -61,7 +61,8 @@ public interface GenshinType<T>
     }
     static <T> void encodeList(TypedValue.Builder builder, List<T> value, GenshinType<T> elementType)
     {
-        builder.setValList(ListStorage.newBuilder().addAllElement(value.stream().map(i -> TypedValue.newBuilder(elementType.encode(GenshinSide.SERVER, Optional.of(i))) // FIXME
+        builder.setValList(ListStorage.newBuilder().addAllElement(value.stream().map(i -> TypedValue.newBuilder(elementType.encode(
+                Side.SERVER, Optional.of(i))) // FIXME
             .build()).collect(Collectors.toList())));
     }
 
@@ -157,7 +158,7 @@ public interface GenshinType<T>
         }
 
         @Override
-        public TypedValue encode(GenshinSide side, Optional<T> value)
+        public TypedValue encode(Side side, Optional<T> value)
         {
             return TypedValue.newBuilder()
                 .setWidget(TypedValue.WidgetType.TYPE_SELECTOR)
@@ -170,7 +171,7 @@ public interface GenshinType<T>
         }
 
         @Override
-        public int getTypeId(GenshinSide side)
+        public int getTypeId(Side side)
         {
             return this.impl.getTypeId(side);
         }
@@ -198,13 +199,13 @@ public interface GenshinType<T>
         return new GenshinType<T>()
         {
             @Override
-            public TypedValue encode(GenshinSide side, Optional<T> value)
+            public TypedValue encode(Side side, Optional<T> value)
             {
                 TypedValue.Builder builder = TypedValue.newBuilder()
                     .setWidget(widgetType)
                     .setIsSet(value.isPresent())
                     .setType(TypeDefinition.newBuilder()
-                        .setBackend(side == GenshinSide.SERVER ? TypeDefinition.Backend.SERVER : TypeDefinition.Backend.CLIENT)
+                        .setBackend(side == Side.SERVER ? TypeDefinition.Backend.SERVER : TypeDefinition.Backend.CLIENT)
                         .setServerSide(TypeDefinition.ServerType.newBuilder()
                             .setTypeTagValue(this.getTypeId(side))
                         )
@@ -213,7 +214,7 @@ public interface GenshinType<T>
                 return builder.build();
             }
             @Override
-            public int getTypeId(GenshinSide side)
+            public int getTypeId(Side side)
             {
                 switch(side)
                 {

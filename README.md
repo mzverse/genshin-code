@@ -27,89 +27,20 @@
 
 示例
 ```kotlin
-val graph = NodeGraph {
-    on(EventEntityCreate) { event ->
-        If(event.guid eq guid(114514L)) {
-            log(event.entity.asString())
-        } Else {
-            log(event.guid.asString())
+GenshinDataAssets {
+    mode = AssetBundle.Mode.OVERLIMIT
+    graph {
+        on(EventEntityCreate) { event ->
+            If(event.guid eq guid(114514L)) {
+                log(event.entity)
+            } Else {
+                log(event.guid)
+            }
         }
     }
-}
-
-graph.autoLayout()
-val generator = AssetsGenerator()
-generator.setMode(AssetBundle.Mode.OVERLIMIT)
-graph.generateAssets(generator)
-generator.toData().save(File("test.gia"))
+}.save(File("test.gia"))
 ```
 
-只需使用`NodeGraph {}`构造节点图，其中：
+使用`GenshinDataAssets {}`构造资源，其中使用`graph {}`构造节点图，最后`save`到文件
 
-### 监听事件
-
-```kotlin
-on(EventType) { event ->
-    // do sth.
-}
-```
-其中`EventType`是事件类型，`event`中包含事件提供的各参数（表达式）
-
-### 常量
-
-通过`const(v)`创建
-```kotlin
-log(const("Hello World")) // 打印到日志
-```
-
-### 控制流
-
-条件控制使用`If`，后可接`Else`
-```kotlin
-If(condition) {
-    // do then
-}
-```
-```kotlin
-If(condition) {
-    // do then
-} Else {
-    // do else
-}
-```
-
-#### 有限循环
-
-使用`ForInt`，对于整数`begin, end`，当$begin \le end$，遍历$[begin, end]$中每个整数
-
-```kotlin
-val begin = const(114)
-val end = const(514)
-ForInt(begin, end) { i -> // i 是循环变量
-    log(i) // 打印到日志
-}
-```
-
-退出循环使用`Break()`，默认退出所在最内层的循环————就像其它编程语言一样
-
-```kotlin
-ForInt(const(114), const(514)) { i ->
-    log(i)
-    If(i eq const(200)) {
-        Break()
-    }
-}
-```
-
-退出外层循环：需要在外层循环标记`loop`，退出时作为`Break`的参数
-
-```kotlin
-ForInt(const(0), const(114)) { i ->
-    val loop1 = loop // 标记外层循环
-    ForInt(const(0), const(514)) { j ->
-        If(j eq const(200)) {
-            Break(loop1) // 退出外层循环
-        }
-    }
-}
-```
+节点图详见[graph.md](graph.md)

@@ -2,6 +2,8 @@ package mz.genshincode.graph.gen
 
 import mz.genshincode.GenshinType
 
-fun <T> NodeGraphGenerator.const(value: T) = ExprConst(value)
+context(context: StatementGenerator)
+fun <T> const(value: T): Expr<T> = ExprConst(value)
 
-fun NodeGraphGenerator.guid(id: Long) = const(GenshinType.Guid(id));
+context(context: StatementGenerator)
+fun guid(id: Long) = const(GenshinType.Guid(id));

@@ -18,6 +18,6 @@ fun Expr<Int>.asString() = cast(GraphNodes.Server.Calc.Cast.intToString())
 context(context: StatementGenerator)
 private fun <T, R> Expr<T>.cast(node: GraphNodes.Expr1<R, T>): Expr<R> {
     this.apply(node.in0)
-    context.append(Statement(setOf(node)))
+    context.addNode(node)
     return ExprPin(node.out)
 }
