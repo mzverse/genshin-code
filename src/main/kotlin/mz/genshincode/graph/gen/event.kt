@@ -1,13 +1,11 @@
 package mz.genshincode.graph.gen
 
 
-interface EventDefinition<T> {
-    fun listen(context: NodeGraphGenerator): Pair<Statement, T>
+interface EventEmitter<T> {
+    context(context: NodeGraphGenerator)
+    fun subscribe(configuration: context(StatementGenerator)(T) -> Unit)
 }
 
 context(context: NodeGraphGenerator)
-fun <T> on(def: EventDefinition<T>, configuration: context(StatementGenerator)(T) -> Unit) {
-    val (trigger, event) = def.listen(context)
-    val chain = StatementGenerator().apply { configuration(event) }.statement
-    context.graph.addNodes((trigger + chain).nodes)
-}
+fun <T> on(emitter: EventEmitter<T>, configuration: context(StatementGenerator)(T) -> Unit) =
+    emitter.subscribe(configuration)

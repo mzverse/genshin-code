@@ -24,9 +24,9 @@ public interface GraphNodes
             }
             interface Local
             {
-                static Statement2_0<GenshinType.Server.Local, Boolean> setBool()
+                static Statement2_0<GenshinType.Server.Local, Boolean> setBoolean()
                 {
-                    return new Statement2_0<>(identifierServer(19), identifierServer(19), GenshinType.Server.LOCAL, GenshinType.selected(0, GenshinType.BOOL));
+                    return new Statement2_0<>(identifierServer(19), identifierServer(19), GenshinType.Server.LOCAL, GenshinType.selected(0, GenshinType.BOOLEAN));
                 }
                 static Statement2_0<GenshinType.Server.Local, Integer> setInt()
                 {
@@ -76,9 +76,9 @@ public interface GraphNodes
                 {
                     return new Statement2_0<>(identifierServer(19), identifierServer(2684), GenshinType.Server.LOCAL, GenshinType.selected(12, GenshinType.VECTOR_LIST));
                 }
-                static Statement2_0<GenshinType.Server.Local, List<Boolean>> setBoolList()
+                static Statement2_0<GenshinType.Server.Local, List<Boolean>> setBooleanList()
                 {
-                    return new Statement2_0<>(identifierServer(19), identifierServer(2685), GenshinType.Server.LOCAL, GenshinType.selected(13, GenshinType.BOOL_LIST));
+                    return new Statement2_0<>(identifierServer(19), identifierServer(2685), GenshinType.Server.LOCAL, GenshinType.selected(13, GenshinType.BOOLEAN_LIST));
                 }
                 static Statement2_0<GenshinType.Server.Local, GenshinType.Config> setConfig()
                 {
@@ -151,7 +151,7 @@ public interface GraphNodes
                     this.flowIn = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_FLOW, 0, Optional.empty()));
                     this.flowThen = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 0, Optional.empty()));
                     this.flowElse = this.addPin(new PinDefinition<>(PinSignature.Kind.OUT_FLOW, 1, Optional.empty()));
-                    this.inCondition = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.BOOL)));
+                    this.inCondition = this.addPin(new PinDefinition<>(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.BOOLEAN)));
                 }
                 public Pin<Void> getFlowIn()
                 {
@@ -305,20 +305,20 @@ public interface GraphNodes
                 {
                     return node(582, 8, GenshinType.PREFAB);
                 }
-                static Expr2<Boolean, Boolean, Boolean> ofBool()
+                static Expr2<Boolean, Boolean, Boolean> ofBoolean()
                 {
-                    return node(786, 9, GenshinType.BOOL);
+                    return node(786, 9, GenshinType.BOOLEAN);
                 }
                 static <T> Expr2<Boolean, T, T> node(long id, int index, GenshinType<T> type)
                 {
-                    return new Expr2<>(identifierServer(14), identifierServer(id), GenshinType.BOOL, GenshinType.selected(index, type), GenshinType.selected(index, type));
+                    return new Expr2<>(identifierServer(14), identifierServer(id), GenshinType.BOOLEAN, GenshinType.selected(index, type), GenshinType.selected(index, type));
                 }
             }
             interface Cast
             {
                 static Expr1<Boolean, Integer> intToBool()
                 {
-                    return new Expr1<>(identifierServer(180), identifierServer(180), GenshinType.selected(0, GenshinType.BOOL), GenshinType.selected(0, GenshinType.INT));
+                    return new Expr1<>(identifierServer(180), identifierServer(180), GenshinType.selected(0, GenshinType.BOOLEAN), GenshinType.selected(0, GenshinType.INT));
                 }
                 static Expr1<Float, Integer> intToFloat()
                 {
@@ -338,11 +338,11 @@ public interface GraphNodes
                 }
                 static Expr1<Integer, Boolean> boolToInt()
                 {
-                    return new Expr1<>(identifierServer(180), identifierServer(185), GenshinType.selected(3, GenshinType.INT), GenshinType.selected(3, GenshinType.BOOL));
+                    return new Expr1<>(identifierServer(180), identifierServer(185), GenshinType.selected(3, GenshinType.INT), GenshinType.selected(3, GenshinType.BOOLEAN));
                 }
                 static Expr1<String, Boolean> boolToString()
                 {
-                    return new Expr1<>(identifierServer(180), identifierServer(186), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(3, GenshinType.BOOL));
+                    return new Expr1<>(identifierServer(180), identifierServer(186), GenshinType.selected(2, GenshinType.STRING), GenshinType.selected(3, GenshinType.BOOLEAN));
                 }
                 static Expr1<Integer, Float> floatToInt()
                 {
@@ -363,26 +363,70 @@ public interface GraphNodes
             }
             interface Math
             {
+                static Expr1<Boolean, Boolean> not()
+                {
+                    return new Expr1<>(identifierServer(229), identifierServer(229), GenshinType.BOOLEAN, GenshinType.BOOLEAN);
+                }
+
                 static Expr2<Integer, Integer, Integer> addInt()
                 {
-                    return binarySelected(200, 200, 0, GenshinType.INT);
+                    return closedBinarySelected(200, 200, 0, GenshinType.INT);
                 }
                 static Expr2<Float, Float, Float> addFloat()
                 {
-                    return binarySelected(200, 201, 1, GenshinType.FLOAT);
+                    return closedBinarySelected(200, 201, 1, GenshinType.FLOAT);
                 }
                 static Expr2<Integer, Integer, Integer> subtractInt()
                 {
-                    return binarySelected(202, 202, 0, GenshinType.INT);
+                    return closedBinarySelected(202, 202, 0, GenshinType.INT);
                 }
                 static Expr2<Float, Float, Float> subtractFloat()
                 {
-                    return binarySelected(202, 203, 1, GenshinType.FLOAT);
+                    return closedBinarySelected(202, 203, 1, GenshinType.FLOAT);
                 }
-                static <T> Expr2<T, T, T> binarySelected(long idShell, long idKernel, int selected, GenshinType<T> type)
+
+                static Expr2<Boolean, Integer, Integer> lessThanInt()
+                {
+                    return compareSelected(230, 230, 0, GenshinType.INT);
+                }
+                static Expr2<Boolean, Float, Float> lessThanFloat()
+                {
+                    return compareSelected(230, 235, 1, GenshinType.FLOAT);
+                }
+                static Expr2<Boolean, Integer, Integer> greaterThanInt()
+                {
+                    return compareSelected(232, 230, 0, GenshinType.INT);
+                }
+                static Expr2<Boolean, Float, Float> greaterThanFloat()
+                {
+                    return compareSelected(232, 237, 1, GenshinType.FLOAT);
+                }
+                static Expr2<Boolean, Integer, Integer> lessThanOrEqualInt()
+                {
+                    return compareSelected(231, 231, 0, GenshinType.INT);
+                }
+                static Expr2<Boolean, Float, Float> lessThanOrEqualFloat()
+                {
+                    return compareSelected(231, 236, 1, GenshinType.FLOAT);
+                }
+                static Expr2<Boolean, Integer, Integer> greaterThanOrEqualInt()
+                {
+                    return compareSelected(233, 233, 0, GenshinType.INT);
+                }
+                static Expr2<Boolean, Float, Float> greaterThanOrEqualFloat()
+                {
+                    return compareSelected(233, 238, 1, GenshinType.FLOAT);
+                }
+
+                static <T> Expr2<T, T, T> closedBinarySelected(long idShell, long idKernel, int selected, GenshinType<T> type)
                 {
                     GenshinType.Selected<T> s = GenshinType.selected(selected, type);
                     return new Expr2<>(identifierServer(idShell), identifierServer(idKernel), s, s, s);
+                }
+                static <T> Expr2<Boolean, T, T> compareSelected(long idShell, long idKernel, int selected, GenshinType<T> type)
+                {
+                    GenshinType.Selected<T> s = GenshinType.selected(selected, type);
+                    return new Expr2<>(identifierServer(idShell), identifierServer(idKernel), GenshinType.BOOLEAN, s, s);
                 }
             }
         }
@@ -390,9 +434,9 @@ public interface GraphNodes
         {
             interface Local
             {
-                static Node<Boolean> getBool()
+                static Node<Boolean> getBoolean()
                 {
-                    return new Node<>(identifierServer(18), 0, GenshinType.BOOL);
+                    return new Node<>(identifierServer(18), 0, GenshinType.BOOLEAN);
                 }
                 static Node<Integer> getInt()
                 {
@@ -442,9 +486,9 @@ public interface GraphNodes
                 {
                     return new Node<>(identifierServer(2666), 12, GenshinType.VECTOR_LIST);
                 }
-                static Node<List<Boolean>> getBoolList()
+                static Node<List<Boolean>> getBooleanList()
                 {
-                    return new Node<>(identifierServer(2667), 13, GenshinType.BOOL_LIST);
+                    return new Node<>(identifierServer(2667), 13, GenshinType.BOOLEAN_LIST);
                 }
                 static Node<GenshinType.Config> getConfig()
                 {

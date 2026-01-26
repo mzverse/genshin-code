@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package mz.genshincode.graph.gen
 
 import mz.genshincode.GenshinType

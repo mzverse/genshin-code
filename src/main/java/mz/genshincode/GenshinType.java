@@ -16,7 +16,7 @@ public interface GenshinType<T>
     TypedValue encode(Side side, Optional<T> value);
     int getTypeId(Side side);
 
-    GenshinType<Boolean> BOOL = basic(ServerTypeId.S_BOOL, ClientTypeId.C_BOOL, TypedValue.WidgetType.ENUM_PICKER, (builder, it) -> builder.setValEnum(Enum.newBuilder().setValue(it ? 1 : 0)));
+    GenshinType<Boolean> BOOLEAN = basic(ServerTypeId.S_BOOLEAN, ClientTypeId.C_BOOLEAN, TypedValue.WidgetType.ENUM_PICKER, (builder, it) -> builder.setValEnum(Enum.newBuilder().setValue(it ? 1 : 0)));
     GenshinType<Integer> INT = basic(ServerTypeId.S_INT, ClientTypeId.C_INT, TypedValue.WidgetType.NUMBER_INPUT, (builder, it) -> builder.setValInt(Int.newBuilder().setValue(it)));
     GenshinType<String> STRING = basic(ServerTypeId.S_STRING, ClientTypeId.C_STRING, TypedValue.WidgetType.TEXT_INPUT, (builder, it) -> builder.setValString(Str.newBuilder().setValue(it)));
     GenshinType<Entity> ENTITY = basic(ServerTypeId.S_ENTITY, ClientTypeId.C_ENTITY);
@@ -33,7 +33,8 @@ public interface GenshinType<T>
     GenshinType<List<Guid>> GUID_LIST = basic(ServerTypeId.S_GUID_LIST, ClientTypeId.C_GUID_LIST, TypedValue.WidgetType.LIST_GROUP, encoderList(GUID));
     GenshinType<List<Float>> FLOAT_LIST = basic(ServerTypeId.S_FLOAT_LIST, ClientTypeId.C_FLOAT_LIST, TypedValue.WidgetType.LIST_GROUP, encoderList(FLOAT));
     GenshinType<List<Vector>> VECTOR_LIST = basic(ServerTypeId.S_VECTOR_LIST, ClientTypeId.C_VECTOR_LIST, TypedValue.WidgetType.LIST_GROUP, encoderList(VECTOR));
-    GenshinType<List<Boolean>> BOOL_LIST = basic(ServerTypeId.S_BOOL_LIST, ClientTypeId.C_BOOL_LIST, TypedValue.WidgetType.LIST_GROUP, encoderList(BOOL));
+    GenshinType<List<Boolean>> BOOLEAN_LIST = basic(ServerTypeId.S_BOOLEAN_LIST, ClientTypeId.C_BOOLEAN_LIST, TypedValue.WidgetType.LIST_GROUP, encoderList(
+        BOOLEAN));
     GenshinType<List<Config>> CONFIG_LIST = basic(ServerTypeId.S_CONFIG_LIST, ClientTypeId.C_CONFIG_LIST, TypedValue.WidgetType.LIST_GROUP, encoderList(CONFIG));
 
     interface Server

@@ -14,19 +14,10 @@ class TestGraph {
             mode = AssetBundle.Mode.OVERLIMIT
             graph {
                 on(EventEntityCreate) { event ->
-                    For(const(0), const(114)) { i ->
-                        val loop1 = this
-                        For(const(0), const(514)) { j ->
-                            log(i)
-                            If(j eq const(200)) {
-                                loop1.Break
-                            } Else {
-                                log("false")
-                            }
-                            log(j)
-                        }
-                    }
-                    Loop {
+                    val i = local(const(0))
+                    While({ i.get() lt const(10) }) {
+                        log(i.get())
+                        i.increment()
                     }
                 }
             }

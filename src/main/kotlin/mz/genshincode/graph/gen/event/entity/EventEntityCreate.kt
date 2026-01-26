@@ -2,23 +2,25 @@ package mz.genshincode.graph.gen.event.entity
 
 import mz.genshincode.GenshinType
 import mz.genshincode.graph.GraphNodes
-import mz.genshincode.graph.gen.EventDefinition
+import mz.genshincode.graph.gen.EventEmitter
 import mz.genshincode.graph.gen.Expr
 import mz.genshincode.graph.gen.ExprPin
 import mz.genshincode.graph.gen.NodeGraphGenerator
 import mz.genshincode.graph.gen.Statement
+import mz.genshincode.graph.gen.StatementGenerator
 
 data class EventEntityCreate(
     val entity: Expr<GenshinType.Entity>,
     val guid: Expr<GenshinType.Guid>
 ) {
-    companion object : EventDefinition<EventEntityCreate> {
-        override fun listen(context: NodeGraphGenerator): Pair<Statement, EventEntityCreate> {
+    companion object : EventEmitter<EventEntityCreate> {
+        context(context: NodeGraphGenerator)
+        override fun subscribe(configuration: context(StatementGenerator)(EventEntityCreate) -> Unit) {
             val node = GraphNodes.Server.Event.Entity.onCreate()
-            return Pair(Statement(node), EventEntityCreate(
+            context.add(Statement(node) + Statement { configuration(EventEntityCreate(
                 ExprPin(node.out0),
                 ExprPin(node.out1)
-            ))
+            )) })
         }
     }
 }

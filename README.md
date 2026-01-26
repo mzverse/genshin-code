@@ -44,3 +44,7 @@ GenshinDataAssets {
 使用`GenshinDataAssets {}`构造资源，其中使用`graph {}`构造节点图，最后`save`到文件
 
 节点图详见[graph.md](graph.md)
+
+开发交流：
+- QQ: 763416502
+- Discord: https://discord.gg/Ssd4FTSKuq

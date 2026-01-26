@@ -65,7 +65,7 @@ public class GraphNode
             this.value = Optional.empty();
         }
 
-        List<Pin<?>> getConnections()
+        public List<Pin<?>> getConnections()
         {
             return this.connections;
         }

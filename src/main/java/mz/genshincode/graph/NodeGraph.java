@@ -62,17 +62,17 @@ public class NodeGraph
     }
 
     public void autoLayout()
-    { // TODO
+    { // TODO: 指望原神更新自动整理
         Map<GraphNode, Point2D.Double> positions = new HashMap<>();
         Random random = ThreadLocalRandom.current();
         for(GraphNode node : this.nodes)
         {
             positions.put(node, new Point2D.Double(random.nextDouble(), random.nextDouble()));
         }
-        double length = 100;
-        double strengthData = 0.02, strengthFlow = 0.05, strength1 = 1000, strength2 = 0.01;
-        int time = 10000;
-        double timeStep = 1;
+        double length = 150, lengthFlow = 100;
+        double strengthData = 0.01, strengthFlow = 0.02, strength1 = 1000, strength2 = 0.001, strength2Flow = 0.10;
+        int time = 1000000;
+        double timeStep = 0.01;
         while(time --> 0)
         {
             Map<GraphNode, Point2D.Double> forces = new HashMap<>();
@@ -85,20 +85,44 @@ public class NodeGraph
                         continue;
                     switch(pin.definition.signShell.getKind())
                     {
-                        case OUT_PARAM:
-                            force.x -= strengthData;
-                            break;
                         case IN_PARAM:
                             force.x += strengthData;
                             break;
-                        case OUT_FLOW:
-                            force.x -= strengthFlow;
+                        case OUT_PARAM:
+                            force.x -= strengthData;
                             break;
                         case IN_FLOW:
                             force.x += strengthFlow;
                             break;
+                        case OUT_FLOW:
+                            force.x -= strengthFlow;
+                            break;
                         default: // TODO
                             break;
+                    }
+                    for(Point2D.Double p1 : Util.iterable(pin.getConnections().stream()
+                        .map(GraphNode.Pin::getNode)
+                        .map(positions::get)))
+                    {
+                        double dx = p.x - p1.x, dy = p.y - p1.y;
+                        double disSq = dx * dx + dy * dy, dis = Math.sqrt(disSq);
+                        double norm;
+                        switch(pin.definition.signShell.getKind())
+                        {
+                            case IN_PARAM:
+                            case OUT_PARAM:
+                                norm = strength2 / (length - dis);
+                                break;
+                            case IN_FLOW:
+                            case OUT_FLOW:
+                                norm = strength2Flow / (lengthFlow - dis);
+                                break;
+                            default: // TODO
+                                norm = 0;
+                                break;
+                        }
+                        force.x += norm * dx / dis;
+                        force.y += norm * dy / dis;
                     }
                 }
                 for(Point2D.Double p1 : positions.values())
@@ -111,22 +135,11 @@ public class NodeGraph
                     force.x += norm * dx / dis;
                     force.y += norm * dy / dis;
                 }
-                for(Point2D.Double p1 : Util.iterable(n.pins.stream()
-                    .map(GraphNode.Pin::getConnections).flatMap(Collection::stream)
-                    .map(GraphNode.Pin::getNode)
-                    .map(positions::get)))
-                {
-                    double dx = p.x - p1.x, dy = p.y - p1.y;
-                    double disSq = dx * dx + dy * dy, dis = Math.sqrt(disSq);
-                    double norm = strength2 / (length - dis);
-                    force.x += norm * dx / dis;
-                    force.y += norm * dy / dis;
-                }
                 forces.put(n, force);
             });
             forces.forEach((n, f) ->
             {
-                double maxForce = 100.;
+                double maxForce = 10.;
                 if(Math.abs(f.x) > maxForce)
                     f.x = maxForce * Math.signum(f.x);
                 if(Math.abs(f.y) > maxForce)

@@ -1,4 +1,4 @@
-@file:Suppress("FunctionName")
+@file:Suppress("FunctionName", "unused")
 
 package mz.genshincode.graph.gen
 
@@ -19,13 +19,22 @@ data class IfContext(val node: GraphNodes.Server.Control.NodeIf) {
     context(context: StatementGenerator)
     infix fun Else(then: StatementGenerator.() -> Unit) {
         context.addNodes((Statement(emptySet(), emptyList(), setOf(node.flowElse))
-                + StatementGenerator().apply(then).statement).nodes) // connection 1
+                + Statement(then)).nodes) // connection 1
     }
 }
+context(context: StatementGenerator)
+fun While(con: context(StatementGenerator)() -> Expr<Boolean>, body: context(StatementGenerator)LoopContext.() -> Unit) =
+    Loop {
+        If(con()) {
+            body()
+        } Else {
+            Break
+        }
+    }
 
 context(context: StatementGenerator)
-fun Loop(body: context(StatementGenerator)LoopContext.(Expr<Int>) -> Unit) =
-    ForClosed(const(Int.MIN_VALUE), const(Int.MAX_VALUE), body)
+fun Loop(body: context(StatementGenerator)LoopContext.() -> Unit) =
+    ForClosed(const(Int.MIN_VALUE), const(Int.MAX_VALUE)) { body() }
 
 context(context: StatementGenerator)
 fun For(start: Expr<Int>, end: Expr<Int>, body: context(StatementGenerator)LoopContext.(Expr<Int>) -> Unit) =

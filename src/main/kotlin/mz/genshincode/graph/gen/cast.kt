@@ -3,6 +3,8 @@ package mz.genshincode.graph.gen
 import mz.genshincode.GenshinType
 import mz.genshincode.graph.GraphNodes
 
+// TODO
+
 @JvmName("castEntityToString")
 context(context: StatementGenerator)
 fun Expr<GenshinType.Entity>.asString() = cast(GraphNodes.Server.Calc.Cast.entityToString())

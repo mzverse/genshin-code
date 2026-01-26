@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package mz.genshincode.graph.gen
 
 import mz.genshincode.data.asset.AssetsGenerator
@@ -11,23 +13,37 @@ fun AssetsGenerator.graph(configuration: context(NodeGraphGenerator)() -> Unit) 
     result.generateAssets(this)
 }
 
-fun NodeGraph(configuration: NodeGraphGenerator.() -> Unit) =
+fun NodeGraph(configuration: context(NodeGraphGenerator)() -> Unit) =
     NodeGraphGenerator().apply(configuration).graph
 
 class NodeGraphGenerator {
     val graph = NodeGraph()
+    fun addNode(value: GraphNode) = graph.addNode(value)
+    fun addNodes(values: Set<GraphNode>) = graph.addNodes(values)
+    fun add(value: Statement) = addNodes(value.nodes)
 }
+
+fun Statement(configuration: context(StatementGenerator)() -> Unit) =
+    StatementGenerator().apply(configuration).statement
 
 class StatementGenerator {
     var statement: Statement = Statement.EMPTY
-    fun append(value: Statement) {
-        statement += value
-    }
+    private var parallel = true
     fun fork(value: Statement) {
         statement = statement and value
     }
-    fun addNodes(values: Set<GraphNode>) =
+    fun append(value: Statement) {
+        if(parallel) {
+            val last = statement
+            statement = value
+            parallel = false
+            fork(last)
+        } else
+            statement += value
+    }
+    fun addNodes(values: Set<GraphNode>) {
         fork(Statement(values))
+    }
     fun addNode(value: GraphNode) =
         addNodes(setOf(value))
 }
