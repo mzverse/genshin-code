@@ -133,7 +133,7 @@ public interface GraphNodes
             {
                 return new NodeSwitch<>(4, GenshinType.STRING, GenshinType.STRING_LIST, 1, countCases);
             }
-            static NodeForInt ForInt()
+            static NodeForInt ForClosed()
             {
                 return new NodeForInt();
             }

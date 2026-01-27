@@ -6,18 +6,18 @@ import mz.genshincode.graph.GraphNodes
 // TODO
 
 @JvmName("castEntityToString")
-context(context: StatementGenerator)
+context(context: FragmentGenerator)
 fun Expr<GenshinType.Entity>.asString() = cast(GraphNodes.Server.Calc.Cast.entityToString())
 
 @JvmName("castGuidToString")
-context(context: StatementGenerator)
+context(context: FragmentGenerator)
 fun Expr<GenshinType.Guid>.asString() = cast(GraphNodes.Server.Calc.Cast.guidToString())
 
 @JvmName("castIntToString")
-context(context: StatementGenerator)
+context(context: FragmentGenerator)
 fun Expr<Int>.asString() = cast(GraphNodes.Server.Calc.Cast.intToString())
 
-context(context: StatementGenerator)
+context(context: FragmentGenerator)
 private fun <T, R> Expr<T>.cast(node: GraphNodes.Expr1<R, T>): Expr<R> {
     this.apply(node.in0)
     context.addNode(node)

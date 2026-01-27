@@ -7,7 +7,9 @@ import mz.genshincode.graph.gen.Expr
 import mz.genshincode.graph.gen.ExprPin
 import mz.genshincode.graph.gen.NodeGraphGenerator
 import mz.genshincode.graph.gen.Statement
-import mz.genshincode.graph.gen.StatementGenerator
+import mz.genshincode.graph.gen.Fragment
+import mz.genshincode.graph.gen.FragmentGenerator
+import mz.genshincode.graph.gen.plus
 
 data class EventEntityCreate(
     val entity: Expr<GenshinType.Entity>,
@@ -15,9 +17,9 @@ data class EventEntityCreate(
 ) {
     companion object : EventEmitter<EventEntityCreate> {
         context(context: NodeGraphGenerator)
-        override fun subscribe(configuration: context(StatementGenerator)(EventEntityCreate) -> Unit) {
+        override fun subscribe(configuration: context(FragmentGenerator)(EventEntityCreate) -> Unit) {
             val node = GraphNodes.Server.Event.Entity.onCreate()
-            context.add(Statement(node) + Statement { configuration(EventEntityCreate(
+            context.add(Statement(node) + Fragment { configuration(EventEntityCreate(
                 ExprPin(node.out0),
                 ExprPin(node.out1)
             )) })

@@ -56,6 +56,11 @@ public class GraphNode
             return GraphNode.this;
         }
 
+        public Optional<GenshinType<T>> getType()
+        {
+            return this.definition.type;
+        }
+
         public void setValue(T value)
         {
             this.value = Optional.of(value);

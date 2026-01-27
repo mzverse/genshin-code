@@ -7,22 +7,22 @@ import mz.genshincode.graph.GraphNodes
 
 // TODO
 @JvmName("logInt")
-context(context: StatementGenerator)
+context(context: FragmentGenerator)
 fun log(message: Expr<Int>) =
     log(message.asString())
 @JvmName("logEntity")
-context(context: StatementGenerator)
+context(context: FragmentGenerator)
 fun log(message: Expr<GenshinType.Entity>) =
     log(message.asString())
 @JvmName("logGuid")
-context(context: StatementGenerator)
+context(context: FragmentGenerator)
 fun log(message: Expr<GenshinType.Guid>) =
     log(message.asString())
 
-context(context: StatementGenerator)
+context(context: FragmentGenerator)
 fun log(message: String) =
     log(const(message))
-context(context: StatementGenerator)
+context(context: FragmentGenerator)
 fun log(message: Expr<String>) =
     context.append(Statement(GraphNodes.Server.Exec.print().also {
         message.apply(it.in0)
