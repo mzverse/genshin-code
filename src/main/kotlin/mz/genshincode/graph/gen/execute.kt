@@ -2,7 +2,8 @@
 
 package mz.genshincode.graph.gen
 
-import mz.genshincode.GenshinType
+import mz.genshincode.Entity
+import mz.genshincode.Guid
 import mz.genshincode.graph.GraphNodes
 
 // TODO
@@ -12,11 +13,11 @@ fun log(message: Expr<Int>) =
     log(message.asString())
 @JvmName("logEntity")
 context(context: FragmentGenerator)
-fun log(message: Expr<GenshinType.Entity>) =
+fun log(message: Expr<Entity>) =
     log(message.asString())
 @JvmName("logGuid")
 context(context: FragmentGenerator)
-fun log(message: Expr<GenshinType.Guid>) =
+fun log(message: Expr<Guid>) =
     log(message.asString())
 
 context(context: FragmentGenerator)

@@ -145,7 +145,7 @@ public class GraphNode
                 pin.definition.type.ifPresent(type ->
                 {
                     data.setType(type.getTypeId(side));
-                    data.setValue(type.encode(side, pin.value));
+                    data.setValue(type.encode(side, pin.value.orElse(null)));
                 });
                 for(Pin<?> connection : pin.connections)
                 {

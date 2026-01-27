@@ -1,19 +1,13 @@
 package mz.genshincode.graph.gen.event.entity
 
-import mz.genshincode.GenshinType
+import mz.genshincode.Entity
+import mz.genshincode.Guid
 import mz.genshincode.graph.GraphNodes
-import mz.genshincode.graph.gen.EventEmitter
-import mz.genshincode.graph.gen.Expr
-import mz.genshincode.graph.gen.ExprPin
-import mz.genshincode.graph.gen.NodeGraphGenerator
-import mz.genshincode.graph.gen.Statement
-import mz.genshincode.graph.gen.Fragment
-import mz.genshincode.graph.gen.FragmentGenerator
-import mz.genshincode.graph.gen.plus
+import mz.genshincode.graph.gen.*
 
 data class EventEntityCreate(
-    val entity: Expr<GenshinType.Entity>,
-    val guid: Expr<GenshinType.Guid>
+    val entity: Expr<Entity>,
+    val guid: Expr<Guid>
 ) {
     companion object : EventEmitter<EventEntityCreate> {
         context(context: NodeGraphGenerator)

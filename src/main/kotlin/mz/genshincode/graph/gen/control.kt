@@ -15,7 +15,7 @@ fun If(con: Expr<Boolean>, then: context(FragmentGenerator)() -> Unit): IfContex
     return IfContext(node)
 }
 
-data class IfContext(val node: GraphNodes.Server.Control.NodeIf) {
+data class IfContext(val node: GraphNodes.Server.Control.If) {
     context(context: FragmentGenerator)
     infix fun Else(then: FragmentGenerator.() -> Unit) {
         context.addNodes((Statement(emptySet(), emptyList(), setOf(node.flowElse))
@@ -70,7 +70,7 @@ fun ForClosed(start: Expr<Int>, end: Expr<Int>, body: context(FragmentGenerator)
 }
 
 data class LoopContext(
-    internal val node: GraphNodes.Server.Control.NodeForInt,
+    internal val node: GraphNodes.Server.Control.ForClosed,
     internal val labelContinue: Label
 )
 

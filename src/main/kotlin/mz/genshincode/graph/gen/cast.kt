@@ -1,17 +1,18 @@
 package mz.genshincode.graph.gen
 
-import mz.genshincode.GenshinType
+import mz.genshincode.Entity
+import mz.genshincode.Guid
 import mz.genshincode.graph.GraphNodes
 
 // TODO
 
 @JvmName("castEntityToString")
 context(context: FragmentGenerator)
-fun Expr<GenshinType.Entity>.asString() = cast(GraphNodes.Server.Calc.Cast.entityToString())
+fun Expr<Entity>.asString() = cast(GraphNodes.Server.Calc.Cast.entityToString())
 
 @JvmName("castGuidToString")
 context(context: FragmentGenerator)
-fun Expr<GenshinType.Guid>.asString() = cast(GraphNodes.Server.Calc.Cast.guidToString())
+fun Expr<Guid>.asString() = cast(GraphNodes.Server.Calc.Cast.guidToString())
 
 @JvmName("castIntToString")
 context(context: FragmentGenerator)

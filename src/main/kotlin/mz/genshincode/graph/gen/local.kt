@@ -2,7 +2,14 @@
 
 package mz.genshincode.graph.gen
 
+import mz.genshincode.Config
+import mz.genshincode.Entity
+import mz.genshincode.Faction
 import mz.genshincode.GenshinType
+import mz.genshincode.Guid
+import mz.genshincode.Prefab
+import mz.genshincode.ServerLocal
+import mz.genshincode.Vector
 import mz.genshincode.graph.GraphNodes
 
 @Suppress("UNCHECKED_CAST")
@@ -18,17 +25,17 @@ fun <T> local(init: Expr<T>): Local<T> =
         GenshinType.STRING ->
             local(init as Expr<String>, GraphNodes.Server.Query.Local.getString()) { GraphNodes.Server.Exec.Local.setString() }
         GenshinType.ENTITY ->
-            local(init as Expr<GenshinType.Entity>, GraphNodes.Server.Query.Local.getEntity()) { GraphNodes.Server.Exec.Local.setEntity() }
+            local(init as Expr<Entity>, GraphNodes.Server.Query.Local.getEntity()) { GraphNodes.Server.Exec.Local.setEntity() }
         GenshinType.VECTOR ->
-            local(init as Expr<GenshinType.Vector>, GraphNodes.Server.Query.Local.getVector()) { GraphNodes.Server.Exec.Local.setVector() }
+            local(init as Expr<Vector>, GraphNodes.Server.Query.Local.getVector()) { GraphNodes.Server.Exec.Local.setVector() }
         GenshinType.GUID ->
-            local(init as Expr<GenshinType.Guid>, GraphNodes.Server.Query.Local.getGuid()) { GraphNodes.Server.Exec.Local.setGuid() }
+            local(init as Expr<Guid>, GraphNodes.Server.Query.Local.getGuid()) { GraphNodes.Server.Exec.Local.setGuid() }
         GenshinType.CONFIG ->
-            local(init as Expr<GenshinType.Config>, GraphNodes.Server.Query.Local.getConfig()) { GraphNodes.Server.Exec.Local.setConfig() }
+            local(init as Expr<Config>, GraphNodes.Server.Query.Local.getConfig()) { GraphNodes.Server.Exec.Local.setConfig() }
         GenshinType.PREFAB ->
-            local(init as Expr<GenshinType.Prefab>, GraphNodes.Server.Query.Local.getPrefab()) { GraphNodes.Server.Exec.Local.setPrefab() }
+            local(init as Expr<Prefab>, GraphNodes.Server.Query.Local.getPrefab()) { GraphNodes.Server.Exec.Local.setPrefab() }
         GenshinType.FACTION ->
-            local(init as Expr<GenshinType.Faction>, GraphNodes.Server.Query.Local.getFaction()) { GraphNodes.Server.Exec.Local.setFaction() }
+            local(init as Expr<Faction>, GraphNodes.Server.Query.Local.getFaction()) { GraphNodes.Server.Exec.Local.setFaction() }
         GenshinType.INT_LIST ->
             local(init as Expr<List<Int>>, GraphNodes.Server.Query.Local.getIntList()) { GraphNodes.Server.Exec.Local.setIntList() }
         GenshinType.FLOAT_LIST ->
@@ -38,17 +45,17 @@ fun <T> local(init: Expr<T>): Local<T> =
         GenshinType.BOOLEAN_LIST ->
             local(init as Expr<List<Boolean>>, GraphNodes.Server.Query.Local.getBooleanList()) { GraphNodes.Server.Exec.Local.setBooleanList() }
         GenshinType.ENTITY_LIST ->
-            local(init as Expr<List<GenshinType.Entity>>, GraphNodes.Server.Query.Local.getEntityList()) { GraphNodes.Server.Exec.Local.setEntityList() }
+            local(init as Expr<List<Entity>>, GraphNodes.Server.Query.Local.getEntityList()) { GraphNodes.Server.Exec.Local.setEntityList() }
         GenshinType.VECTOR_LIST ->
-            local(init as Expr<List<GenshinType.Vector>>, GraphNodes.Server.Query.Local.getVectorList()) { GraphNodes.Server.Exec.Local.setVectorList() }
+            local(init as Expr<List<Vector>>, GraphNodes.Server.Query.Local.getVectorList()) { GraphNodes.Server.Exec.Local.setVectorList() }
         GenshinType.GUID_LIST ->
-            local(init as Expr<List<GenshinType.Guid>>, GraphNodes.Server.Query.Local.getGuidList()) { GraphNodes.Server.Exec.Local.setGuidList() }
+            local(init as Expr<List<Guid>>, GraphNodes.Server.Query.Local.getGuidList()) { GraphNodes.Server.Exec.Local.setGuidList() }
         GenshinType.CONFIG_LIST ->
-            local(init as Expr<List<GenshinType.Config>>, GraphNodes.Server.Query.Local.getConfigList()) { GraphNodes.Server.Exec.Local.setConfigList() }
+            local(init as Expr<List<Config>>, GraphNodes.Server.Query.Local.getConfigList()) { GraphNodes.Server.Exec.Local.setConfigList() }
         GenshinType.Server.PREFAB_LIST ->
-            local(init as Expr<List<GenshinType.Prefab>>, GraphNodes.Server.Query.Local.getPrefabList()) { GraphNodes.Server.Exec.Local.setPrefabList() }
+            local(init as Expr<List<Prefab>>, GraphNodes.Server.Query.Local.getPrefabList()) { GraphNodes.Server.Exec.Local.setPrefabList() }
         GenshinType.Server.FACTION_LIST ->
-            local(init as Expr<List<GenshinType.Faction>>, GraphNodes.Server.Query.Local.getFactionList()) { GraphNodes.Server.Exec.Local.setFactionList() }
+            local(init as Expr<List<Faction>>, GraphNodes.Server.Query.Local.getFactionList()) { GraphNodes.Server.Exec.Local.setFactionList() }
         else ->
             throw IllegalArgumentException()
     } as Local<T>
@@ -57,7 +64,7 @@ context(context: FragmentGenerator)
 private fun <T> local(
     init: Expr<T>,
     node: GraphNodes.Server.Query.Local.Node<T>,
-    setter: (FragmentGenerator) -> GraphNodes.Statement2_0<GenshinType.Server.Local, T>
+    setter: (FragmentGenerator) -> GraphNodes.Statement2_0<ServerLocal, T>
 ): Local<T> {
     init.apply(node.inInit)
     context.addNode(node)
@@ -66,7 +73,7 @@ private fun <T> local(
 
 data class Local<T>(
     val node: GraphNodes.Server.Query.Local.Node<T>,
-    val setter: context(FragmentGenerator)() -> GraphNodes.Statement2_0<GenshinType.Server.Local, T>
+    val setter: context(FragmentGenerator)() -> GraphNodes.Statement2_0<ServerLocal, T>
 ) {
     context(context: FragmentGenerator)
     fun get(): Expr<T> = ExprPin(node.outValue)

@@ -2,7 +2,7 @@
 
 package mz.genshincode.graph.gen
 
-import mz.genshincode.GenshinType
+import mz.genshincode.*
 import mz.genshincode.graph.GraphNodes
 
 context(context: FragmentGenerator)
@@ -53,19 +53,19 @@ infix fun Expr<String>.eq(that: Expr<String>) =
     compare(that, GraphNodes.Server.Calc.IsEqual.ofString())
 @JvmName("eqGuid")
 context(context: FragmentGenerator)
-infix fun Expr<GenshinType.Guid>.eq(that: Expr<GenshinType.Guid>) =
+infix fun Expr<Guid>.eq(that: Expr<Guid>) =
     compare(that, GraphNodes.Server.Calc.IsEqual.ofGuid())
 @JvmName("eqEntity")
 context(context: FragmentGenerator)
-infix fun Expr<GenshinType.Entity>.eq(that: Expr<GenshinType.Entity>) =
+infix fun Expr<Entity>.eq(that: Expr<Entity>) =
     compare(that, GraphNodes.Server.Calc.IsEqual.ofEntity())
 @JvmName("eqVector")
 context(context: FragmentGenerator)
-infix fun Expr<GenshinType.Vector>.eq(that: Expr<GenshinType.Vector>) =
+infix fun Expr<Vector>.eq(that: Expr<Vector>) =
     compare(that, GraphNodes.Server.Calc.IsEqual.ofVector())
 @JvmName("eqFaction")
 context(context: FragmentGenerator)
-infix fun Expr<GenshinType.Faction>.eq(that: Expr<GenshinType.Faction>) =
+infix fun Expr<Faction>.eq(that: Expr<Faction>) =
     compare(that, GraphNodes.Server.Calc.IsEqual.ofFaction())
 @JvmName("eqInt")
 context(context: FragmentGenerator)
@@ -77,11 +77,11 @@ infix fun Expr<Float>.eq(that: Expr<Float>) =
     compare(that, GraphNodes.Server.Calc.IsEqual.ofFloat())
 @JvmName("eqConfig")
 context(context: FragmentGenerator)
-infix fun Expr<GenshinType.Config>.eq(that: Expr<GenshinType.Config>) =
+infix fun Expr<Config>.eq(that: Expr<Config>) =
     compare(that, GraphNodes.Server.Calc.IsEqual.ofConfig())
 @JvmName("eqPrefab")
 context(context: FragmentGenerator)
-infix fun Expr<GenshinType.Prefab>.eq(that: Expr<GenshinType.Prefab>) =
+infix fun Expr<Prefab>.eq(that: Expr<Prefab>) =
     compare(that, GraphNodes.Server.Calc.IsEqual.ofPrefab())
 @JvmName("eqBoolean")
 context(context: FragmentGenerator)
@@ -94,19 +94,19 @@ infix fun Expr<String>.ne(that: Expr<String>) =
     !(this eq that)
 @JvmName("neGuid")
 context(context: FragmentGenerator)
-infix fun Expr<GenshinType.Guid>.ne(that: Expr<GenshinType.Guid>) =
+infix fun Expr<Guid>.ne(that: Expr<Guid>) =
     !(this eq that)
 @JvmName("neEntity")
 context(context: FragmentGenerator)
-infix fun Expr<GenshinType.Entity>.ne(that: Expr<GenshinType.Entity>) =
+infix fun Expr<Entity>.ne(that: Expr<Entity>) =
     !(this eq that)
 @JvmName("neVector")
 context(context: FragmentGenerator)
-infix fun Expr<GenshinType.Vector>.ne(that: Expr<GenshinType.Vector>) =
+infix fun Expr<Vector>.ne(that: Expr<Vector>) =
     !(this eq that)
 @JvmName("neFaction")
 context(context: FragmentGenerator)
-infix fun Expr<GenshinType.Faction>.ne(that: Expr<GenshinType.Faction>) =
+infix fun Expr<Faction>.ne(that: Expr<Faction>) =
     !(this eq that)
 @JvmName("neInt")
 context(context: FragmentGenerator)
@@ -118,11 +118,11 @@ infix fun Expr<Float>.ne(that: Expr<Float>) =
     !(this eq that)
 @JvmName("neConfig")
 context(context: FragmentGenerator)
-infix fun Expr<GenshinType.Config>.ne(that: Expr<GenshinType.Config>) =
+infix fun Expr<Config>.ne(that: Expr<Config>) =
     !(this eq that)
 @JvmName("nePrefab")
 context(context: FragmentGenerator)
-infix fun Expr<GenshinType.Prefab>.ne(that: Expr<GenshinType.Prefab>) =
+infix fun Expr<Prefab>.ne(that: Expr<Prefab>) =
     !(this eq that)
 @JvmName("neBoolean")
 context(context: FragmentGenerator)
