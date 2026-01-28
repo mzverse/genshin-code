@@ -56,7 +56,7 @@ sealed interface Expr<T> {
 }
 data class ExprPin<T>(val pin: GraphNode.Pin<T>): Expr<T> {
     override val type: GenshinType<T>
-        get() = pin.type.get()
+        get() = pin.type.get().unwrap()
 }
 data class ExprConst<T>(override val type: GenshinType<T>, val value: T): Expr<T>
 

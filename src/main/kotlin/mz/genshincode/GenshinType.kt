@@ -1,18 +1,8 @@
 package mz.genshincode
 
-import mz.genshincode.data.asset.ClientTypeId
+import mz.genshincode.data.asset.*
 import mz.genshincode.data.asset.Enum
-import mz.genshincode.data.asset.Flt
-import mz.genshincode.data.asset.Id
-import mz.genshincode.data.asset.ListStorage
-import mz.genshincode.data.asset.PolymorphicValue
-import mz.genshincode.data.asset.ServerTypeId
-import mz.genshincode.data.asset.Str
-import mz.genshincode.data.asset.TypeDefinition
-import mz.genshincode.data.asset.TypedValue
-import mz.genshincode.data.asset.Vec
 import mz.genshincode.data.asset.Vec.Value
-import java.util.Objects
 import java.util.stream.Collectors
 
 class Entity private constructor()
@@ -24,6 +14,8 @@ data class Vector(var x: Float, var y: Float, var z: Float)
 sealed interface GenshinType<T> {
     fun encode(side: Side, value: T?): TypedValue
     fun getTypeId(side: Side): Int
+
+    fun unwrap() = this
 
     object BOOLEAN: Basic<Boolean>(
         ServerTypeId.S_BOOLEAN,
@@ -110,7 +102,7 @@ sealed interface GenshinType<T> {
 
     }
 
-    class Selected<T>(var index: Int, var impl: GenshinType<T>) : GenshinType<T> {
+    data class Selected<T>(val index: Int, val impl: GenshinType<T>) : GenshinType<T> {
         override fun encode(side: Side, value: T?): TypedValue {
             return TypedValue.newBuilder().apply {
                 widget = TypedValue.WidgetType.TYPE_SELECTOR
@@ -125,13 +117,7 @@ sealed interface GenshinType<T> {
         override fun getTypeId(side: Side) =
             impl.getTypeId(side)
 
-        override fun equals(other: Any?): Boolean {
-            if (other !is Selected<*>) return false
-            return index == other.index && impl == other.impl
-        }
-        override fun hashCode(): Int {
-            return Objects.hash(index, impl)
-        }
+        override fun unwrap() = impl
     }
 
     sealed class Basic<T>(val serverType: ServerTypeId, val clientType: ClientTypeId, val widgetType: TypedValue.WidgetType): GenshinType<T> {
