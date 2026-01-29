@@ -18,15 +18,19 @@ EventEntityCreate.subscribe { event -> // 监听实体创建事件
 }
 ```
 
-## 作用域
+## 数据流（作用域）
 
 每次只有一个触发器（事件）会执行，期间运行过的节点才有值，否则为默认值（全0）
 
 此周期结束后所有节点的值（包括局部变量）都会清空，请勿跨事件直接读取值
 
+对于非执行节点，每次获取其值都会进行计算（局部变量除外）
+
+列表和结构体等为引用类型，在变量中可以修改（在其它地方没区别）
+
 ## 常量
 
-通过`const(v)`创建
+通过对应类型的`const(v)`创建
 ```kotlin
 log(const("Hello World")) // 打印到日志
 ```
@@ -36,18 +40,18 @@ log(const("Hello World")) // 打印到日志
 > [!IMPORTANT]
 > 请注意，局部变量的作用域是当前触发器（事件）
 
-使用`local(init)`创建，其中`init`是初始值表达式。当然你需要使用*Kotlin*级别的`val`进行标记
+使用`Local(init)`创建，其中`init`是初始值表达式。当然你需要使用*Kotlin*级别的`val`进行标记
 
 ```kotlin
-val myLocal = local(const(0))
+val myLocal = Local(const(0))
 ```
 
-局部变量也是静态强类型的，取决于你调用的`local`方法（`init`参数）
+局部变量也是静态强类型的，取决于`init`的类型
 
 使用`get`得到变量的值，使用`set`设置
 
 ```kotlin
-val myLocal = local(const(114)) // 创建局部变量
+val myLocal = Local(const(114)) // 创建局部变量
 log(myLocal.get()) // 114
 myLocal.set(const(514)) // 设置局部变量的值
 log(myLocal.get()) // 514
@@ -57,6 +61,8 @@ log(myLocal.get()) // 514
 
 > [!NOTE]
 > 为避免和关键字冲突，控制流标识符均使用大驼峰
+> 
+> 实际在Idea中这些控制流标识符会变成粉色标识（通过DslMarker）
 
 条件控制使用`If`，后可接`Else`
 ```kotlin
@@ -140,7 +146,7 @@ For(const(0), const(514)) { i ->
 
 ### 无限循环
 
-使用`Loop`进行无限循环（其实是42亿次，因为官方不允许真正的死循环）
+使用`Loop`进行无限循环（其实是42亿次，因为官方不允许真的死循环）
 
 ```kotlin
 Loop {
@@ -153,7 +159,7 @@ Loop {
 示例：做一个C风格的“for循环”
 
 ```kotlin
-val i = local(const(0)) // int i = 0
+val i = Local(const(0)) // int i = 0
 While({ i.get() lt const(10) }) { // while(i < 10)
     log(i.get())
     i++ // Idea会警告NeverRead，即使无副作用这里也不该警告的，这完全是Idea的问题
@@ -164,7 +170,7 @@ While({ i.get() lt const(10) }) { // while(i < 10)
 
 在While的基础上增加更新语句即得“for循环”：
 ```kotlin
-var i = local(const(0))
+var i = Local(const(0))
 For({ i.get() lt const(10) }, { i++ }) {
     log(i.get())
 }
@@ -172,9 +178,9 @@ For({ i.get() lt const(10) }, { i++ }) {
 
 相比传统的C-Style的三段式for循环，由于作用域限制，init语句被提升到循环外了
 
-没事，我们还有自动创建变量的版本，只需把初始值表达式添加到首个参数：
+没事，我们还有自动传递变量的版本，只需创建变量添加到首个参数：
 ```kotlin
-For(const(0), { it.get() lt const(10) }, { it.inc() }) {
+For(Local(const(0)), { it.get() lt const(10) }, { it.inc() }) {
     If(it.get() eq const(5)) {
         Continue
     }
@@ -184,8 +190,8 @@ For(const(0), { it.get() lt const(10) }, { it.inc() }) {
 后续通过lambda的参数访问它，当然它默认叫`it`，不喜欢的话你也可以手动指定：
 ```kotlin
 For(
-    const(0), // 初始值表达式，自动创建局部变量
-    { it.get() lt const(10) }, // 循环条件
+    Local(const(0)), // 初始化：创建局部变量
+    { it.get() lt const(10) }, // 循环条件，其中it就是循环变量
     { it.inc() } // 更新，此处不能使用i++，因为kotlin的形参不可变
 ) { i -> // 显式声明形参i
     If(i.get() eq const(5)) {
@@ -217,7 +223,7 @@ log("World")
 ```
 
 
-## 布尔（比较、关系操作符、条件）
+## 比较
 
 *Kotlin*可不支持这样重载运算符，所以我们使用中缀函数，有点像*Bash*或*PowerShell*
 
@@ -243,7 +249,39 @@ on(EventEntityCreate) { event -> // 监听实体创建事件
 }
 ```
 
-布尔表达式支持逻辑非：`!expr`（`ne`就是这样实现的）
+## 运算
+
+整数和浮点数的四则运算支持运算符
+
+```kotlin
+val a = const(114)
+val b = const(514)
+log(a + b) // 628
+log(a - b) // -400
+log(a * b)
+log(a / b)
+```
+
+特别地，**整型局部变量**支持自增`inc()`和自减`dec()`
+```kotlin
+val i = Local(const(0))
+i.set(i.get() + const(114))
+log(i.get()) // 114
+i.inc()
+log(i.get()) // 115
+```
+对于自增，操作符只允许`++i`或独立语句，自减同理，一般只建议写独立语句
+```kotlin
+var i = Local(const(114)) // 需要var，即使它实际不变
+log((++i).get()) // 自增然后打印
+log(i++.get()) // 逻辑错误！！！实际上只支持++i，不要这样写！
+++i // 有时会警告变量不再使用——这是Idea的问题——此时还是用i.inc()吧
+i++ // 单语句用哪个都一样
+```
+
+### 布尔运算（逻辑运算）
+
+运算符仅支持逻辑非：`!expr`（`ne`就是这样实现的）
 
 ```kotlin
 val a = const(114)
@@ -254,31 +292,30 @@ If(!expr) {
 }
 ```
 
-## 运算
+其它布尔运算使用中缀函数（注意这些都是非短路的）：
 
-目前支持整数和浮点数的加和减，以及布尔值的逻辑非
+| 运算 | 函数    | 运算符（不支持） |
+|----|-------|----------|
+| 与  | `and` | `&&`     |
+| 或  | `or`  | `\|\|`   |
+| 异或 | `xor` | `^`      | 
+
 ```kotlin
 val a = const(114)
 val b = const(514)
-log(a + b) // 628
-log(a - b) // -400
+If((a eq b) or (a lt b)) {
+    log("114 < 514")
+}
 ```
 
-特别地，**整型局部变量**支持自增`inc()`和自减`dec()`
+`and`和`or`有短路的版本（后接lambda）：
+
 ```kotlin
-val i = local(const(0))
-i.set(i.get() + const(114))
-log(i.get()) // 114
-i.inc()
-log(i.get()) // 115
-```
-对于自增，操作符只允许`++i`或独立语句，自减同理，一般只建议写独立语句
-```kotlin
-var i = local(const(114)) // 需要var，即使它实际不变
-log((++i).get()) // 自增然后打印
-log(i++.get()) // 逻辑错误！！！实际上只支持++i，不要这样写！
-++i // 有时会警告变量不再使用——这是Idea的问题——此时还是用i.inc()吧
-i++ // 单语句用哪个都一样
+val a = const(114)
+val b = const(514)
+If((a eq b) or { a lt b }) {
+    log("114 < 514")
+}
 ```
 
 ## 类型转换

@@ -5,6 +5,7 @@ package mz.genshincode.graph.gen
 import mz.genshincode.Config
 import mz.genshincode.Entity
 import mz.genshincode.Faction
+import mz.genshincode.GenshinDsl
 import mz.genshincode.GenshinType
 import mz.genshincode.Guid
 import mz.genshincode.Prefab
@@ -14,54 +15,74 @@ import mz.genshincode.Vector
 context(context: FragmentGenerator)
 fun guid(id: Long) = const(Guid(id))
 
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: Boolean): Expr<Boolean> = ExprConst(GenshinType.BOOLEAN, value)
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: Int): Expr<Int> = ExprConst(GenshinType.INT, value)
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: Float): Expr<Float> = ExprConst(GenshinType.FLOAT, value)
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: String): Expr<String> = ExprConst(GenshinType.STRING, value)
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: Entity): Expr<Entity> = ExprConst(GenshinType.ENTITY, value)
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: Vector): Expr<Vector> = ExprConst(GenshinType.VECTOR, value)
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: Guid): Expr<Guid> = ExprConst(GenshinType.GUID, value)
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: Config): Expr<Config> = ExprConst(GenshinType.CONFIG, value)
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: Prefab): Expr<Prefab> = ExprConst(GenshinType.PREFAB, value)
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: Faction): Expr<Faction> = ExprConst(GenshinType.FACTION, value)
 
 @JvmName("constIntList")
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: List<Int>): Expr<List<Int>> = ExprConst(GenshinType.INT_LIST, value)
 @JvmName("constFloatList")
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: List<Float>): Expr<List<Float>> = ExprConst(GenshinType.FLOAT_LIST, value)
 @JvmName("constStringList")
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: List<String>): Expr<List<String>> = ExprConst(GenshinType.STRING_LIST, value)
 @JvmName("constBooleanList")
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: List<Boolean>): Expr<List<Boolean>> = ExprConst(GenshinType.BOOLEAN_LIST, value)
 @JvmName("constEntityList")
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: List<Entity>): Expr<List<Entity>> = ExprConst(GenshinType.ENTITY_LIST, value)
 @JvmName("constVectorList")
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: List<Vector>): Expr<List<Vector>> = ExprConst(GenshinType.VECTOR_LIST, value)
 @JvmName("constGuidList")
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: List<Guid>): Expr<List<Guid>> = ExprConst(GenshinType.GUID_LIST, value)
 @JvmName("constConfigList")
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: List<Config>): Expr<List<Config>> = ExprConst(GenshinType.CONFIG_LIST, value)
 @JvmName("constPrefabList")
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: List<Prefab>): Expr<List<Prefab>> = ExprConst(GenshinType.Server.PREFAB_LIST, value)
 @JvmName("constFactionList")
+@GenshinDsl
 context(context: FragmentGenerator)
 fun const(value: List<Faction>): Expr<List<Faction>> = ExprConst(GenshinType.Server.FACTION_LIST, value)

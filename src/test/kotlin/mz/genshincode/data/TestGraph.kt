@@ -21,7 +21,7 @@ class TestGraph {
                     log("Hello")
                     l1.place() // 到这里
                     log("World")
-                    For(const(0), { it.get() lt const(10) }, { it.inc() }) { i ->
+                    For(Local(const(0)), { it.get() lt const(10) }, { it.inc() }) { i ->
                         If(i.get() eq const(5)) {
                             Continue
                         }
