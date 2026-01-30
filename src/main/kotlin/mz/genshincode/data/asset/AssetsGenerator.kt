@@ -6,23 +6,22 @@ import mz.genshincode.GenshinDsl
 
 @GenshinDsl
 class AssetsGenerator {
-    var mode: AssetBundle.Mode? = AssetBundle.Mode.OVERLIMIT
-    @JvmField
-    var side: Side? = Side.SERVER
+    var mode: AssetBundle.Mode = AssetBundle.Mode.OVERLIMIT
+    var side: Side = Side.SERVER
 
-    var assets: MutableList<Asset?> = ArrayList<Asset?>()
-    var dependencies: MutableList<Asset?> = ArrayList<Asset?>()
+    var assets: MutableList<Asset> = ArrayList()
+    var dependencies: MutableList<Asset> = ArrayList()
 
     var nextGuid: Long = (1L shl 30) + 1L
     fun allocateGuid(): Long {
         return this.nextGuid++
     }
 
-    fun addAsset(value: Asset?) {
+    fun addAsset(value: Asset) {
         this.assets.add(value)
     }
 
-    fun addDependency(value: Asset?) {
+    fun addDependency(value: Asset) {
         this.dependencies.add(value)
     }
 

@@ -207,18 +207,31 @@ interface GraphNodes {
                     fun greaterThanOrEqualInt() = compareSelected(233, 233, 0, GenshinType.INT)
                     fun greaterThanOrEqualFloat() = compareSelected(233, 238, 1, GenshinType.FLOAT)
 
-                    fun logicAnd() = logic(226)
-                    fun logicOr() = logic(227)
-                    fun logicXor() = logic(228)
+                    fun shl() = binaryClosed(778, GenshinType.INT)
+                    fun ushr() = binaryClosed(779, GenshinType.INT)
+                    fun bitwiseAnd() = binaryClosed(780, GenshinType.INT)
+                    fun bitwiseOr() = binaryClosed(781, GenshinType.INT)
 
+                    fun logicAnd() = binaryClosed(226, GenshinType.BOOLEAN)
+                    fun logicOr() = binaryClosed(227, GenshinType.BOOLEAN)
+                    fun logicXor() = binaryClosed(228, GenshinType.BOOLEAN)
+
+                    fun <T> binaryClosed(
+                        id: Long,
+                        type: GenshinType<T>
+                    ): Expr2<T, T, T> = binaryClosed(id, id ,type)
+                    fun <T> binaryClosed(
+                        idShell: Long,
+                        idKernel: Long,
+                        type: GenshinType<T>
+                    ): Expr2<T, T, T> =
+                        Expr2(identifierServer(idShell), identifierServer(idKernel), type, type, type)
                     fun <T> binaryClosedSelected(
                         idShell: Long,
                         idKernel: Long,
                         selected: Int,
                         type: GenshinType<T>
-                    ): Expr2<T, T, T> = GenshinType.Selected(selected, type).let {
-                        Expr2(identifierServer(idShell), identifierServer(idKernel), it, it, it)
-                    }
+                    ): Expr2<T, T, T> = binaryClosed(idShell, idKernel, GenshinType.Selected(selected, type))
                     fun <T> compareSelected(
                         idShell: Long,
                         idKernel: Long,
@@ -227,8 +240,6 @@ interface GraphNodes {
                     ): Expr2<Boolean, T, T> = GenshinType.Selected(selected, type).let {
                         Expr2(identifierServer(idShell), identifierServer(idKernel), GenshinType.BOOLEAN, it, it)
                     }
-                    fun logic(id: Long) =
-                        Expr2(identifierServer(id), identifierServer(id), GenshinType.BOOLEAN, GenshinType.BOOLEAN, GenshinType.BOOLEAN)
                 }
             }
         }

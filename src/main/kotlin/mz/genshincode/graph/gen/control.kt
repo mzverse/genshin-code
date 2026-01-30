@@ -20,7 +20,7 @@ fun If(con: Expr<Boolean>, then: context(FragmentGenerator)() -> Unit): IfContex
 data class IfContext(val node: GraphNodes.Server.Control.If) {
     @GenshinDsl
     context(context: FragmentGenerator)
-    infix fun Else(then: FragmentGenerator.() -> Unit) {
+    infix fun Else(then: context(FragmentGenerator)() -> Unit) {
         context.addNodes((Statement(emptySet(), emptyList(), setOf(node.flowElse))
                 + Fragment(then)).nodes) // connection 1
     }

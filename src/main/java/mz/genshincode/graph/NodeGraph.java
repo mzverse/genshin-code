@@ -54,7 +54,7 @@ public class NodeGraph
                         .setRuntimeId(guid)
                     )
                     .setDisplayName(this.name)
-                    .addAllNode(ids.keySet().stream().map(it -> it.encode(generator.side, ids)).collect(Collectors.toList()))
+                    .addAllNode(ids.keySet().stream().map(it -> it.encode(generator.getSide(), ids)).collect(Collectors.toList()))
                 )
             )
         );
