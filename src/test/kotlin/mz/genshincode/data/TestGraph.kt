@@ -14,7 +14,16 @@ class TestGraph {
             mode = AssetBundle.Mode.OVERLIMIT
             graph {
                 on(EventEntityCreate) { event ->
-                    log(const(-8) shr const(2))
+                    Switch(event.guid.asString()) {
+                        Case("awa")
+                            log("awa")
+                            Break
+                        Case("qwq")
+                        Case("pwq")
+                            log("qwq")
+                            Break
+                    }
+                    log("finish")
                 }
             }
         }.save(File("test.gia"))

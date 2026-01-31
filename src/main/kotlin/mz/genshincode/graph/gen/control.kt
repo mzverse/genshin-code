@@ -1,19 +1,20 @@
-@file:Suppress("FunctionName", "unused")
+@file:Suppress("FunctionName", "PropertyName", "unused")
 
 package mz.genshincode.graph.gen
 
 import mz.genshincode.GenshinDsl
 import mz.genshincode.graph.GraphNode
 import mz.genshincode.graph.GraphNodes
+import mz.genshincode.graph.GraphNodes.Server.Control.NodeSwitch
 
 @GenshinDsl
 context(context: FragmentGenerator)
 fun If(con: Expr<Boolean>, then: context(FragmentGenerator)() -> Unit): IfContext {
     val node = GraphNodes.Server.Control.If()
     con.apply(node.inCondition)
-    context.append(Statement(node, node.flowIn, node.flowThen))
+    context append Statement(node, node.flowIn, node.flowThen)
     then()
-    context.fork(Statement(emptySet(), emptyList(), setOf(node.flowElse))) // connection 2
+    context.fork(Statement(emptySet(), emptyList(), setOf(node.flowElse)))
     return IfContext(node)
 }
 
@@ -21,8 +22,59 @@ data class IfContext(val node: GraphNodes.Server.Control.If) {
     @GenshinDsl
     context(context: FragmentGenerator)
     infix fun Else(then: context(FragmentGenerator)() -> Unit) {
-        context.addNodes((Statement(emptySet(), emptyList(), setOf(node.flowElse))
-                + Fragment(then)).nodes) // connection 1
+        context.fragment = (context.fragment as Statement).let {
+            it.copy(flowsOut = HashSet(it.flowsOut).apply {
+                assert(remove(node.flowElse))
+            })
+        }
+        context fork Statement(emptySet(), emptyList(), setOf(node.flowElse)) + Fragment(then)
+    }
+}
+
+@GenshinDsl
+@JvmName("SwitchInt")
+context(context: FragmentGenerator)
+fun Switch(con: Expr<Int>, body: context(FragmentGenerator)SwitchContext<Int>.() -> Unit) =
+    Switch(con, body, GraphNodes.Server.Control.SwitchInt())
+@GenshinDsl
+@JvmName("SwitchString")
+context(context: FragmentGenerator)
+fun Switch(con: Expr<String>, body: context(FragmentGenerator)SwitchContext<String>.() -> Unit) =
+    Switch(con, body, GraphNodes.Server.Control.SwitchString())
+@GenshinDsl
+context(context: FragmentGenerator)
+fun <T> Switch(con: Expr<T>, body: context(FragmentGenerator)SwitchContext<T>.() -> Unit, node: NodeSwitch<T>) {
+    context append Statement(setOf(node), listOf(node.flowIn), emptySet())
+    con.apply(node.inControlling)
+    val cases = ArrayList<T>()
+    node.inCases.setValue(cases)
+    SwitchContext(node, cases, Label()).apply {
+        body()
+        finish()
+    }
+}
+class SwitchContext<T>(val node: NodeSwitch<T>, val cases: MutableList<T>, val label: Label) {
+    lateinit var def: Unit
+    @GenshinDsl
+    context(context: FragmentGenerator)
+    fun Case(value: T) {
+        cases.add(value)
+        context fork Statement(emptySet(), emptyList(), setOf(node.addCase()))
+    }
+    @GenshinDsl
+    context(context: FragmentGenerator)
+    val Default: Unit get() {
+        def = Unit
+        context fork Statement(emptySet(), emptyList(), setOf(node.flowDefault))
+    }
+    @GenshinDsl
+    context(context: FragmentGenerator)
+    val Break: Unit get() = label.go()
+    context(context: FragmentGenerator)
+    internal fun finish() {
+        if (!::def.isInitialized)
+            Default
+        label.place()
     }
 }
 

@@ -54,10 +54,12 @@ fun Fragment(configuration: context(FragmentGenerator)() -> Unit) =
 @GenshinDsl
 class FragmentGenerator {
     var fragment: Fragment = Attachment.EMPTY
-    fun fork(value: Fragment) {
+    @GenshinDsl
+    infix fun fork(value: Fragment) {
         fragment = fragment and value
     }
-    fun append(value: Fragment) {
+    @GenshinDsl
+    infix fun append(value: Fragment) {
         fragment += value
     }
     fun addNodes(values: Set<GraphNode>) {

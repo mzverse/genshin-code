@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> 使用此DSL创建节点图仍会受到原神的诸多限制
+
 ## 监听事件
 
 使用`on(eventType) { event -> ... }`，其中`eventType`是事件类型，`event`包含事件的各参数
@@ -203,6 +206,25 @@ For(
 
 特别地，for循环的`Continue`不会跳过update语句，就像其它编程语言一样
 
+### Switch
+
+支持`Int`和`String`。如果你学过*C/C++*或*Java*等，看这个示例就能明白：
+
+```kotlin
+on(EventEntityCreate) { event ->
+    Switch(event.guid.asString()) {
+        Case("awa")
+            log("awa")
+            Break
+        Case("qwq")
+        Case("pwp")
+            log("pwq")
+            Break
+    }
+    log("finish")
+}
+```
+
 ### 自定义跳转（实验性）
 
 > [!IMPORTANT]
@@ -304,7 +326,7 @@ If(!expr) {
 val a = const(114)
 val b = const(514)
 If((a eq b) or (a lt b)) {
-    log("114 < 514")
+    log("114 <= 514")
 }
 ```
 
@@ -314,7 +336,7 @@ If((a eq b) or (a lt b)) {
 val a = const(114)
 val b = const(514)
 If((a eq b) or { a lt b }) {
-    log("114 < 514")
+    log("114 <= 514")
 }
 ```
 

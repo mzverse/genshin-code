@@ -76,10 +76,10 @@ interface GraphNodes {
         @Suppress("FunctionName")
         interface Control {
             companion object {
-                fun SwitchInt(countCases: Int): NodeSwitch<Int> =
-                    NodeSwitch(3, GenshinType.INT, GenshinType.INT_LIST, 0, countCases)
-                fun SwitchString(countCases: Int): NodeSwitch<String> =
-                    NodeSwitch(4, GenshinType.STRING, GenshinType.STRING_LIST, 1, countCases)
+                fun SwitchInt(): NodeSwitch<Int> =
+                    NodeSwitch(3, 0, GenshinType.INT, GenshinType.INT_LIST)
+                fun SwitchString(): NodeSwitch<String> =
+                    NodeSwitch(4, 1, GenshinType.STRING, GenshinType.STRING_LIST)
                 fun Break(): Statement0_0 =
                     Statement0_0(identifierServer(6), identifierServer(6))
             }
@@ -93,34 +93,30 @@ interface GraphNodes {
 
             class NodeSwitch<T>(
                 id: Long,
-                type: GenshinType<T>,
-                listType: GenshinType<List<T>>,
                 selected: Int,
-                countCases: Int
+                type: GenshinType<T>,
+                listType: GenshinType<List<T>>
             ): GraphNode(identifierServer(3), identifierServer(id)) {
                 val flowIn: Pin<Void> = addPin(PinDefinition(PinSignature.Kind.IN_FLOW, 0, Optional.empty()))
                 val flowDefault: Pin<Void> = addPin(PinDefinition(PinSignature.Kind.OUT_FLOW, 0, Optional.empty()))
                 val inControlling: Pin<T> = addPin(PinDefinition(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.Selected(selected, type))))
                 val inCases: Pin<List<T>> = addPin(PinDefinition(PinSignature.Kind.IN_PARAM, 1, Optional.of(GenshinType.Selected(selected, listType))))
-                val flowCases: MutableList<Pin<Void>> = ArrayList<Pin<Void>>()
+                val flowsCase: MutableList<Pin<Void>> = ArrayList<Pin<Void>>()
 
-                init {
-                    for (i in 0..<countCases) this.flowCases.add(
-                        addPin(
-                            PinDefinition(
-                                PinSignature.Kind.OUT_FLOW,
-                                1 + i,
-                                Optional.empty()
-                            )
+                fun addCase(): Pin<Void> =
+                    addPin(
+                        PinDefinition<Void>(
+                            PinSignature.Kind.OUT_FLOW,
+                            1 + this.flowsCase.size,
+                            Optional.empty()
                         )
-                    )
-                }
+                    ).also(this.flowsCase::add)
 
                 fun setCases(value: List<T>) =
                     this.inCases.setValue(value)
 
                 fun getFlowCase(i: Int): Pin<Void> =
-                    this.flowCases[i]
+                    this.flowsCase[i]
             }
 
             class ForClosed internal constructor() : GraphNode(identifierServer(5), identifierServer(5)) {
@@ -242,9 +238,47 @@ interface GraphNodes {
                     }
                 }
             }
+
+            object MakeList {
+                fun ofInt(size: Int) =
+                    Node(169, 0, GenshinType.INT_LIST, GenshinType.INT, size)
+                // TODO: 谁爱用谁用吧，谁爱写谁写（
+                class Node<T>(id: Long, selected: Int, type: GenshinType<List<T>>, typeElement: GenshinType<T>, size: Int): GraphNode(identifierServer(169), identifierServer(id)) {
+                    val inSize: Pin<Int> = addPin(PinDefinition(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.INT)))
+                    val inValues: List<Pin<T>>
+                    val outList: Pin<List<T>> = addPin(PinDefinition(PinSignature.Kind.OUT_PARAM, 0, Optional.of(GenshinType.Selected(selected, type))))
+
+                    init {
+                        if(!(0 .. 100).contains(size))
+                            throw IllegalArgumentException("size must be within [0, 100]: $size")
+
+                        inSize.setValue(size)
+                        inValues = (0 until 100).map { // 气笑了，但原神这么写的
+                            addPin(PinDefinition(PinSignature.Kind.IN_PARAM, 1 + it, Optional.of(GenshinType.Selected(selected, typeElement))))
+                        }
+                    }
+                }
+            }
         }
 
         interface Query {
+            object GetListSize {
+                fun ofInt() = Node(142, 0, GenshinType.INT_LIST)
+                fun ofString() = Node(143, 1, GenshinType.STRING_LIST)
+                fun ofEntity() = Node(144, 2, GenshinType.ENTITY_LIST)
+                fun ofGuid() = Node(145, 3, GenshinType.GUID_LIST)
+                fun ofFloat() = Node(146, 4, GenshinType.FLOAT_LIST)
+                fun ofVector() = Node(147, 5, GenshinType.VECTOR_LIST)
+                fun ofBoolean() = Node(148, 6, GenshinType.BOOLEAN_LIST)
+                fun ofConfig() = Node(562, 7, GenshinType.CONFIG_LIST)
+                fun ofPrefab() = Node(563, 8, GenshinType.Server.PREFAB_LIST)
+                fun ofFaction() = Node(2645, 9, GenshinType.Server.FACTION_LIST)
+                class Node<T>(id: Long, selected: Int, type: GenshinType<List<T>>): GraphNode(identifierServer(142), identifierServer(id)) {
+                    val inList: Pin<List<T>> = addPin(PinDefinition(PinSignature.Kind.IN_PARAM, 0, Optional.of(GenshinType.Selected(selected, type))))
+                    val outSize: Pin<Int> = addPin(PinDefinition(PinSignature.Kind.OUT_PARAM, 0, Optional.of(GenshinType.INT)))
+                }
+            }
+
             interface Local {
                 class Node<T>(idKernel: Identifier, type: GenshinType<T>) :
                     GraphNode(identifierServer(18), idKernel) {

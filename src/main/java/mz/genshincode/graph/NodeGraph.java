@@ -71,7 +71,7 @@ public class NodeGraph
         }
         double length = 150, lengthFlow = 100;
         double strengthData = 0.01, strengthFlow = 0.02, strength1 = 1000, strength2 = 0.001, strength2Flow = 0.10;
-        int time = 1000000;
+        int time = 10000;
         double timeStep = 0.01;
         while(time --> 0)
         {

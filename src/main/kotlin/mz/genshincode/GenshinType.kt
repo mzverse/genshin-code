@@ -103,6 +103,11 @@ sealed interface GenshinType<T> {
     }
 
     data class Selected<T>(val index: Int, val impl: GenshinType<T>) : GenshinType<T> {
+        init {
+            if(impl is Selected)
+                throw IllegalArgumentException("impl cannot be Selected: $impl")
+        }
+
         override fun encode(side: Side, value: T?): TypedValue {
             return TypedValue.newBuilder().apply {
                 widget = TypedValue.WidgetType.TYPE_SELECTOR
@@ -117,7 +122,7 @@ sealed interface GenshinType<T> {
         override fun getTypeId(side: Side) =
             impl.getTypeId(side)
 
-        override fun unwrap() = impl
+        override fun unwrap() = impl.unwrap()
     }
 
     sealed class Basic<T>(val serverType: ServerTypeId, val clientType: ClientTypeId, val widgetType: TypedValue.WidgetType): GenshinType<T> {
